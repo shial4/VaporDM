@@ -11,7 +11,7 @@ import Vapor
 import Fluent
 
 public final class DMDirective {
-    public static var entity = "DMDirective"
+    public static var entity = "dmdirective"
     public var exists = false
     
     public var id: Node?
@@ -20,13 +20,13 @@ public final class DMDirective {
     
     struct Constants {
         static let id = "id"
-        static let room = "roomId"
-        static let owner = "ownerId"
+        static let room = "roomid"
+        static let owner = "ownerid"
         static let created = "created"
         static let updated = "updated"
         static let message = "message"
         static let isSeen = "seen"
-        static let isSystemMessage = "systemMessage"
+        static let isSystemMessage = "system"
     }
     
     public var message: String
@@ -41,16 +41,16 @@ public final class DMDirective {
     }
     
     public init(node: Node, in context: Context) throws {
-        do { id = try node.extract(Constants.id) } catch {}
-        do { room = try node.extract(Constants.room) } catch {}
-        do { owner = try node.extract(Constants.owner) } catch {}
-        do { created = try node.extract(Constants.created,
-                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
-        do { updated = try node.extract(Constants.updated,
-                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
+        id = try node.extract(Constants.id)
+        room = try node.extract(Constants.room)
+        owner = try node.extract(Constants.owner)
+        created = try node.extract(Constants.created,
+                                        transform: Date.init(timeIntervalSince1970:))
+        updated = try node.extract(Constants.updated,
+                                        transform: Date.init(timeIntervalSince1970:))
         message = try node.extract(Constants.message)
-        isSystemMessage = try node.extract(Constants.isSystemMessage)
         isSeen = try node.extract(Constants.isSeen)
+        isSystemMessage = try node.extract(Constants.isSystemMessage)
     }
 }
 
@@ -58,7 +58,10 @@ extension DMDirective: Model {
     public func makeNode(context: Context) throws -> Node {
         return try Node(node: [Constants.id: id,
                                Constants.room: room,
+                               Constants.owner: owner,
                                Constants.message: message,
+                               Constants.isSeen: isSeen,
+                               Constants.isSystemMessage: isSystemMessage,
                                Constants.created: created.timeIntervalSince1970,
                                Constants.updated: updated.timeIntervalSince1970])
     }

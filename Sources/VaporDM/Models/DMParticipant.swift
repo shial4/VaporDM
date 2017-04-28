@@ -18,4 +18,8 @@ public extension DMParticipant where Self: Model {
     public func rooms() throws -> Siblings<DMRoom> {
         return try siblings()
     }
+    
+    public func messages() throws -> Children<DMDirective> {
+        return children(DMDirective.Constants.owner)
+    }
 }

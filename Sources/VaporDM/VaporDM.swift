@@ -1,10 +1,10 @@
 import Vapor
 
-open class VaporDM {
+open class VaporDM<T:DMUser> {
     fileprivate let drop: Droplet?
     
-    public init<T:DMUser>(for droplet: Droplet, withUser model: T.Type) {
+    public init(for droplet: Droplet) {
         self.drop = droplet
-        _ = DMController(drop: droplet, model: model)
+        _ = DMController<T>(drop: droplet)
     }
 }

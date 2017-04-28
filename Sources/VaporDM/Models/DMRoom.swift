@@ -11,7 +11,7 @@ import Vapor
 import Fluent
 
 public final class DMRoom {
-    public static var entity = "DMRoom"
+    public static var entity = "dmroom"
     public var exists = false
     
     public var id: Node?
@@ -70,13 +70,22 @@ extension DMRoom {
     public func messages() throws -> [DMDirective] {
         return try children().all()
     }
+    
     public func messages(from: Double, to: Double? = nil) throws -> [DMDirective] {
         guard let to = to else {
             return try children().filter(DMDirective.Constants.created, .greaterThan, from).all()
         }
         return try children().filter(DMDirective.Constants.created, .greaterThan, from).filter(DMDirective.Constants.created, .lessThan, to).all()
     }
+    
     public func participant<T:DMUser>() throws -> Siblings<T> {
         return try siblings()
+    }
+    
+    public func participants<T:DMUser>(exclude sender: T? = nil) throws -> [T] {
+        guard let id = sender?.id else {
+            return try participant().all()
+        }
+        return try participant().filter(T.idKey, .notEquals, id).all()
     }
 }
