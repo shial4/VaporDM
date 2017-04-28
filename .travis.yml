@@ -6,6 +6,17 @@ sudo: required
 dist: trusty
 osx_image: xcode8.3
 
+services:
+  - postgresql
+
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -rf /usr/local/var/postgres; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then initdb /usr/local/var/postgres; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pg_ctl -D /usr/local/var/postgres start; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then createuser -s postgres; fi
+  - psql -c 'CREATE DATABASE vapordm;' -U postgres
+  - psql -c "CREATE USER vapordm WITH PASSWORD 'vapordm';" -U postgres
+
 before_install:
     - if [ $TRAVIS_OS_NAME == "osx" ]; then
             brew tap vapor/tap;

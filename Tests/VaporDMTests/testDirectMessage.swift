@@ -19,6 +19,7 @@ class testDirectMessage: XCTestCase {
         ("testExistingRoomObjectFromMessage", testExistingRoomObjectFromMessage),
         ("testNewRoomObjectFromMessage", testNewRoomObjectFromMessage),
         ("testMessageHistory", testMessageHistory),
+        ("testRoomParticipants", testRoomParticipants),
     ]
     
     var drop: Droplet! = nil

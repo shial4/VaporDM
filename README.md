@@ -16,6 +16,12 @@ A quick guide, step by step, about how to use this library.
 
 Add the following dependency to your `Package.swift` file:
 
+For Pre-release version
+```swift
+.Package(url: "https://github.com/shial4/VaporDM.git", Version(0, 1, 0, prereleaseIdentifiers: ["alpha", "2"]))
+```
+
+For official release version (coming soon)
 ```swift
 .Package(url:"https://github.com/shial4/VaporDM.git", majorVersion: 0, minor: 1)
 ```
@@ -39,7 +45,7 @@ import Vapor
 import VaporDM
 
 let drop = Droplet()
-let dm = VaporDM(for: drop!, withUser: User.self)
+let dm = VaporDM<User>(for: drop!)
 ```
 VaporDM require your `User` DataBase model to corespond `DMParticipant` protocol
 ```
