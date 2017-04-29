@@ -17,21 +17,24 @@ public enum DirectMessageError: CustomStringConvertible, Error {
     case unableToReadMessageTypeParameter
     case unknowMessageType
     case unableToReadBodyParameter
+    case unableToGetOrCreatePivot
     
     public var description: String {
         switch self {
         case .jsonWrongContent:
-            return ""
+            return "JSON have wrong context"
         case .unableToReadRoomParameter:
-            return ""
+            return "unable to read room parameter"
         case .unableToReadMessageTypeParameter:
-            return ""
+            return "unable to read message type"
         case .unknowMessageType:
-            return ""
+            return "unknown message type"
         case .unableToReadBodyParameter:
-            return ""
+            return "unable to ready body parameter"
         case .missingSenderId:
-            return ""
+            return "missing sender's id"
+        case .unableToGetOrCreatePivot:
+            return "unable to get or create pivot"
         }
     }
 }
@@ -45,12 +48,12 @@ private enum Type: Character {
     case readMessage = "R"
 }
 
-struct DirectMessage {
+struct DirectMessage<T: DMUser> {
     var room: DMRoom
-    var sender: DMUser
+    var sender: T
     var json: JSON
     
-    init<T:DMUser>(sender: T, message: String) throws {
+    init(sender: T, message: String) throws {
         self.json = try JSON(bytes: Array(message.utf8))
         guard let room = json.object?["room"]?.string else {
             throw DirectMessageError.unableToReadRoomParameter
@@ -59,13 +62,14 @@ struct DirectMessage {
         if let existsRoom = try DMRoom.find(room) {
                 self.room = existsRoom
         } else {
-            var newRoom = try DMRoom(id: room, name: "")
+            var newRoom = DMRoom(uniqueId: room, name: "")
             try newRoom.save()
             self.room = newRoom
         }
+        _ = try Pivot<T, DMRoom>.getOrCreate(sender, self.room)
     }
     
-    func parseMessage<T:DMUser>() throws -> (redirect: JSON, receivers: [T]) {
+    func parseMessage() throws -> (redirect: JSON, receivers: [T]) {
         guard let typeChar = json.object?["type"]?.string?.characters.first else {
             throw DirectMessageError.unableToReadMessageTypeParameter
         }
@@ -91,7 +95,7 @@ struct DirectMessage {
             break
         }
         let redirect = try composeMessage(from: json)
-        let receivers: [T] = try roomReceivers()
+        let receivers: [T] = try room.participants(exclude: sender)
         return (redirect, receivers)
     }
     
@@ -106,13 +110,8 @@ struct DirectMessage {
         guard let id = sender.id else {
             throw DirectMessageError.missingSenderId
         }
-        return JSON([json, JSON(["sender":id])])
-    }
-    
-    fileprivate func roomReceivers<T:DMUser>() throws -> [T] {
-        guard let id = sender.id else {
-            throw DirectMessageError.missingSenderId
-        }
-        return try room.participant().filter(T.idKey, .notEquals, id).all()
+        var jsonNode = json.makeNode()
+        jsonNode["sender"] = id
+        return JSON(jsonNode)
     }
 }

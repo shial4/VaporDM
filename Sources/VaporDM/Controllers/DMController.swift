@@ -11,18 +11,61 @@ import HTTP
 import Vapor
 import Fluent
 
-public final class DMController {
+public final class DMController<T:DMUser> {
     
     open var group: String = "chat"
     fileprivate weak var drop: Droplet?
     fileprivate var connections: [String: WebSocket] = [:]
+    fileprivate func models() -> [Preparation.Type] {
+        return [Pivot<T, DMRoom>.self,
+                DMRoom.self,
+                DMDirective.self,
+        ]
+    }
     
-    public init<T:DMUser>(drop: Droplet, model: T.Type) {
+    public init(drop: Droplet) {
         self.drop = drop
-        drop.preparations += [Pivot<T, DMRoom>.self]
+        drop.preparations += models()
         let chat = drop.grouped(group)
         chat.socket("service", T.self, handler: chatService)
+        chat.post("room", handler: createRoom)
+        chat.post("room", String.self, handler: addUsersToRoom)
+        chat.get("room", String.self, handler: getRoom)
+        chat.get("room", String.self, "participant", handler: getRoomParticipant)
         chat.get("history", String.self, handler: history)
+    }
+    
+    public func createRoom(request: Request) throws -> ResponseRepresentable {
+        var room = try request.room()
+        try room.save()
+        return try room.makeJSON()
+    }
+    
+    public func getRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard let room = try DMRoom.find(uniqueId) else {
+            throw Abort.notFound
+        }
+        return try room.makeJSON()
+    }
+    
+    public func addUsersToRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard var room = try DMRoom.find(uniqueId) else {
+            throw Abort.notFound
+        }
+        room.updated = Date()
+        try room.save()
+        for user: T in try request.users() {
+            _ = try Pivot<T, DMRoom>.getOrCreate(user, room)
+        }
+        return try room.makeJSON()
+    }
+    
+    public func getRoomParticipant(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard let room = try DMRoom.find(uniqueId) else {
+            throw Abort.notFound
+        }
+        let users: [T] = try room.participants()
+        return try users.makeJSON()
     }
     
     public func history(request: Request, room: String) throws -> ResponseRepresentable {
@@ -68,5 +111,19 @@ public final class DMController {
             }
             self.connections.removeValue(forKey: id)
         }
+    }
+}
+
+extension Request {
+    func room() throws -> DMRoom {
+        guard let json = json else { throw Abort.badRequest }
+        return try DMRoom(node: json)
+    }
+    func users<T:DMUser>() throws -> [T] {
+        guard let json = json else { throw Abort.badRequest }
+        guard let array = json.pathIndexableArray else {
+            return [try T(node: json)]
+        }
+        return try array.map() { try T(node: $0)}
     }
 }
