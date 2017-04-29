@@ -8,11 +8,10 @@ osx_image: xcode8.3
 
 services:
   - postgresql
+
 addons:
   postgresql: "9.4"
-env:
-  global:
-  - DATABASE_URL=postgres://localhost:5432/vapordm?sslmode=disable&user=vapordm
+
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -rf /usr/local/var/postgres; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then initdb /usr/local/var/postgres; fi
@@ -42,5 +41,5 @@ script:
     - swift test
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash) 
     - eval "$(curl -sL https://swift.vapor.sh/codecov)"
+    - bash <(curl -s https://codecov.io/bash)

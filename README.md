@@ -30,14 +30,14 @@ And then make sure to regenerate your xcode project. You can use `vapor xcode -y
 
 ## 🚀 Usage
 
-### 1- Import
+### 1 Import
 
 It's really easy to get started with the VaporDM library! First you need to import the library, by adding this to the top of your Swift file:
 ```swift
 import VaporDM
 ```
 
-### 2- Initialize
+### 2 Initialize
 
 The easiest way to setup VaporDM is to create object for example in your `main.swift` file. Like this:
 ```swift
@@ -49,10 +49,54 @@ let dm = VaporDM<User>(for: drop!)
 ```
 VaporDM require your `User` DataBase model to corespond `DMParticipant` protocol
 ```
-extension User: DMParticipant {
-    
+extension User: DMParticipant {}
+```
+
+### 3 Message format
+VaporDM support message `Type` such as:
+```
+connected = "C"
+disconnected = "D"
+messageText = "M"
+beginTyping = "B"
+endTyping = "E"
+readMessage = "R"
+```
+To send text message we will use type `M` and address it to `DMRoom`. Vapor Direct Message send messages to room which are dispatch to room participants. Sending Message to non existing room will create that room.
+`DMRoom` repreents group of users between messages are sent.
+Text message example:
+```
+{  
+   "room":"a5b7c179-ff9f-41f7-a2a7-9c127b8bf1ac",
+   "type":"M",
+   "body":"This is a text message"
 }
 ```
+
+To work with `VaporDM` you will need to know how to use endpoints for creating message rooms adding/removing users and geting list of room participants.
+
+#### 1 Create message room
+method: `POST` uri: `/chat/room/${ROOM_ID}`
+To create room we need send `JSON` with `DMRoom` object inside. Room require minimum `uniqueid` and `name` to be in this json.
+```
+{  
+   "uniqueid":"a5b7c179-ff9f-41f7-a2a7-9c127b8bf1ac",
+   "name":"Room Name"
+}
+```
+
+#### 2 Get room
+method: `GET` uri: `/chat/room/${ROOM_ID}`
+
+#### 3 Add User/Users to room
+method: `POST` uri: `/chat/room/${ROOM_ID}`
+To add users simple send `JSON` with single user or `JSON` with array of users.
+
+#### 4 Get room participant
+method: `GET` uri: `/chat/room/${ROOM_ID}/participant`
+
+### 2 Connection
+To connect under `WebSocket` simple use this url `"ws://${Your_host_and_additional_path}/chat/service/${ROOM_ID}"`
 
 ## ⭐ Contributing
 
