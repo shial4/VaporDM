@@ -44,12 +44,21 @@ class testExtensions: XCTestCase {
     //MARK: Pivot Extension
     func testPivotLeftKey() {
         let leftKey = Pivot<User, DMRoom>.leftKey
-        XCTAssert(leftKey == "\(User.name)_\(User.idKey)")
+        if User.entity < DMRoom.entity {
+            XCTAssert(leftKey == "\(User.name)_\(User.idKey)", "\(leftKey)")
+        } else {
+            XCTAssert(leftKey == "\(DMRoom.name)_\(DMRoom.idKey)", "\(leftKey)")
+        }
     }
     
     func testPivotRightKey() {
         let rightKey = Pivot<User, DMRoom>.rightKey
-        XCTAssert(rightKey == "\(DMRoom.name)_\(DMRoom.idKey)")
+        if User.entity < DMRoom.entity {
+            XCTAssert(rightKey == "\(DMRoom.name)_\(DMRoom.idKey)", "\(rightKey)")
+        } else {
+            XCTAssert(rightKey == "\(User.name)_\(User.idKey)", "\(rightKey)")
+        }
+        
     }
     
     func testPivotGetOrCreate() {

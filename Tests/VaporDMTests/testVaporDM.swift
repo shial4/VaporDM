@@ -24,6 +24,7 @@ class testVaporDM: XCTestCase {
         super.setUp()
         drop = try! Droplet.makeTestDroplet()
         dm = VaporDM(for: drop)
+        try! drop.runCommands()
         try! drop.revertAndPrepareDatabase()
     }
     

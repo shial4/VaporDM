@@ -27,7 +27,6 @@ extension Droplet {
         try preparations.forEach {
             if let database = database {
                 try $0.revert(database)
-                try $0.prepare(database)
             }
         }
     }

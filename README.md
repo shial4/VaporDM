@@ -4,6 +4,7 @@
 ![Vapor](https://img.shields.io/badge/Vapor-1.0-green.svg)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/shial4/VaporDM/master/license)
 [![Build Status](https://travis-ci.org/shial4/VaporDM.svg?branch=master)](https://travis-ci.org/shial4/VaporDM)
+[![CircleCI](https://circleci.com/gh/shial4/VaporDM.svg?style=svg)](https://circleci.com/gh/shial4/VaporDM)
 [![codecov](https://codecov.io/gh/shial4/VaporDM/branch/master/graph/badge.svg)](https://codecov.io/gh/shial4/VaporDM)
 
 VaporDM is a simple, yet elegant, Swift library that allows you to integrate chat system into your Vapor project.
