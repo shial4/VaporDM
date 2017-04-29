@@ -8,12 +8,17 @@ osx_image: xcode8.3
 
 services:
   - postgresql
-
+addons:
+  postgresql: "9.4"
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -rf /usr/local/var/postgres; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then initdb /usr/local/var/postgres; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pg_ctl -D /usr/local/var/postgres start; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then createuser -s postgres; fi
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      rm -rf /usr/local/var/postgres;
+      initdb /usr/local/var/postgres;
+      pg_ctl -D /usr/local/var/postgres start;
+      createuser -s postgres;
+  else
+      sudo service postgresql start
+  fi
   - psql -c 'CREATE DATABASE vapordm;' -U postgres
   - psql -c "CREATE USER vapordm WITH PASSWORD 'vapordm';" -U postgres
 
