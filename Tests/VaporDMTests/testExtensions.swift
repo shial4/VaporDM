@@ -18,7 +18,10 @@ class testExtensions: XCTestCase {
         ("testPivotRightKey", testPivotRightKey),
         ("testPivotGetOrCreate", testPivotGetOrCreate),
         ("testPivotGetOrCreateExisting", testPivotGetOrCreateExisting),
-        ("testPivotGetOrCreateNilId", testPivotGetOrCreateNilId)
+        ("testPivotGetOrCreateNilId1", testPivotGetOrCreateNilId1),
+        ("testPivotGetOrCreateNilId2", testPivotGetOrCreateNilId2),
+        ("testPivotGetOrCreateNilId3", testPivotGetOrCreateNilId3),
+        ("testPivotGetOrCreateNilId4", testPivotGetOrCreateNilId4),
         ]
     
     var drop: Droplet! = nil
@@ -28,6 +31,7 @@ class testExtensions: XCTestCase {
         super.setUp()
         drop = try! Droplet.makeTestDroplet()
         dm = VaporDM(for: drop)
+        try! drop.runCommands()
         try! drop.revertAndPrepareDatabase()
     }
     
@@ -50,8 +54,10 @@ class testExtensions: XCTestCase {
     
     func testPivotGetOrCreate() {
         do {
-            let user = try User(id: 1)
-            let room = try DMRoom(id: 1, name: "RoomName")
+            var user = try User(id: 1)
+            try user.save()
+            var room = DMRoom(uniqueId: UUID().uuidString, name: "RoomName")
+            try room.save()
             let pivot = try Pivot<User, DMRoom>.getOrCreate(user, room)
             XCTAssertNotNil(pivot)
         } catch {
@@ -61,8 +67,10 @@ class testExtensions: XCTestCase {
     
     func testPivotGetOrCreateExisting() {
         do {
-            let user = try User(id: 1)
-            let room = try DMRoom(id: 1, name: "RoomName")
+            var user = try User(id: 1)
+            try user.save()
+            var room = DMRoom(uniqueId: UUID().uuidString, name: "RoomName")
+            try room.save()
             let pivot = try Pivot<User, DMRoom>.getOrCreate(user, room)
             XCTAssertNotNil(pivot)
             let pivot2 = try Pivot<User, DMRoom>.getOrCreate(user, room)
@@ -73,11 +81,49 @@ class testExtensions: XCTestCase {
         }
     }
     
-    func testPivotGetOrCreateNilId() {
+    func testPivotGetOrCreateNilId1() {
         do {
             let user = try User(id: 1)
-            user.id = nil
-            let room = try DMRoom(id: 1, name: "RoomName")
+            let room = DMRoom(uniqueId: UUID().uuidString, name: "RoomName")
+            let pivot = try Pivot<User, DMRoom>.getOrCreate(user, room)
+            XCTAssertNil(pivot)
+        } catch RelationError.noIdentifier {
+            XCTAssert(true, "no identifier")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testPivotGetOrCreateNilId2() {
+        do {
+            let user = try User(id: 1)
+            let room = DMRoom(uniqueId: UUID().uuidString, name: "RoomName")
+            let pivot = try Pivot<User, DMRoom>.getOrCreate(user, room)
+            XCTAssertNil(pivot)
+        } catch RelationError.noIdentifier {
+            XCTAssert(true, "no identifier")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testPivotGetOrCreateNilId3() {
+        do {
+            let user = try User(id: 1)
+            var room = DMRoom(uniqueId: UUID().uuidString, name: "RoomName")
+            try room.save()
+            let pivot = try Pivot<User, DMRoom>.getOrCreate(user, room)
+            XCTAssertNotNil(pivot)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testPivotGetOrCreateNilId4() {
+        do {
+            var user = try User(id: 1)
+            try user.save()
+            let room = DMRoom(uniqueId: UUID().uuidString, name: "RoomName")
             let pivot = try Pivot<User, DMRoom>.getOrCreate(user, room)
             XCTAssertNil(pivot)
         } catch RelationError.noIdentifier {

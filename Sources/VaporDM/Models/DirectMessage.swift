@@ -62,7 +62,7 @@ struct DirectMessage<T: DMUser> {
         if let existsRoom = try DMRoom.find(room) {
                 self.room = existsRoom
         } else {
-            var newRoom = try DMRoom(id: room, name: "")
+            var newRoom = DMRoom(uniqueId: room, name: "")
             try newRoom.save()
             self.room = newRoom
         }

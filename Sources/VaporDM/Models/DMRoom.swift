@@ -18,27 +18,41 @@ public final class DMRoom {
     
     struct Constants {
         static let id = "id"
+        static let uniqueId = "uniqueid"
         static let created = "created"
         static let updated = "updated"
         static let name = "name"
     }
     
     public var name: String
+    public var uniqueId: String
     public var created: Date = Date()
     public var updated: Date = Date()
     
-    public init(id: NodeRepresentable, name: String) throws {
-        self.id = try id.makeNode()
+    public init(uniqueId: String, name: String) {
+        self.uniqueId = uniqueId
         self.name = name
     }
     
     public init(node: Node, in context: Context) throws {
-        do { id = try node.extract(Constants.id) } catch {}
-        do { created = try node.extract(Constants.created,
-                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
-        do { updated = try node.extract(Constants.updated,
-                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
-        name = try node.extract(Constants.name)
+        switch context {
+        case is DatabaseContext:
+            id = try node.extract(Constants.id)
+            created = try node.extract(Constants.created,
+                                            transform: Date.init(timeIntervalSince1970:))
+            updated = try node.extract(Constants.updated,
+                                            transform: Date.init(timeIntervalSince1970:))
+            name = try node.extract(Constants.name)
+            uniqueId = try node.extract(Constants.uniqueId)
+        default:
+            do { id = try node.extract(Constants.id) } catch {}
+            do { created = try node.extract(Constants.created,
+                                            transform: Date.init(timeIntervalSince1970:)) } catch {}
+            do { updated = try node.extract(Constants.updated,
+                                            transform: Date.init(timeIntervalSince1970:)) } catch {}
+            name = try node.extract(Constants.name)
+            uniqueId = try node.extract(Constants.uniqueId)
+        }
     }
 }
 
@@ -46,6 +60,7 @@ extension DMRoom: Model {
     public func makeNode(context: Context) throws -> Node {
         return try Node(node: [Constants.id: id,
                                Constants.name: name,
+                               Constants.uniqueId: uniqueId,
                                Constants.created: created.timeIntervalSince1970,
                                Constants.updated: updated.timeIntervalSince1970])
     }
@@ -55,6 +70,7 @@ extension DMRoom: Preparation {
     public static func prepare(_ database: Database) throws {
         try database.create(DMRoom.entity, closure: { (room) in
             room.id()
+            room.string(Constants.uniqueId, unique: true)
             room.string(Constants.name)
             room.double(Constants.created)
             room.double(Constants.updated)
@@ -87,5 +103,12 @@ extension DMRoom {
             return try participant().all()
         }
         return try participant().filter(T.idKey, .notEquals, id).all()
+    }
+}
+
+extension DMRoom {
+    public class func find(_ uniqueId: String) throws -> DMRoom? {
+        guard let _ = database else { return nil }
+        return try DMRoom.query().filter(Constants.uniqueId, .equals, uniqueId).first()
     }
 }

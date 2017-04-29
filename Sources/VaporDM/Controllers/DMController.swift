@@ -29,9 +29,9 @@ public final class DMController<T:DMUser> {
         let chat = drop.grouped(group)
         chat.socket("service", T.self, handler: chatService)
         chat.post("room", handler: createRoom)
-        chat.post("room", DMRoom.self, handler: addUsersToRoom)
-        chat.get("room", DMRoom.self, handler: getRoom)
-        chat.get("room/participant", DMRoom.self, handler: getRoomParticipant)
+        chat.post("room", String.self, handler: addUsersToRoom)
+        chat.get("room", String.self, handler: getRoom)
+        chat.get("room", String.self, "participant", handler: getRoomParticipant)
         chat.get("history", String.self, handler: history)
     }
     
@@ -41,12 +41,17 @@ public final class DMController<T:DMUser> {
         return try room.makeJSON()
     }
     
-    public func getRoom(request: Request, room: DMRoom) throws -> ResponseRepresentable {
+    public func getRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard let room = try DMRoom.find(uniqueId) else {
+            throw Abort.notFound
+        }
         return try room.makeJSON()
     }
     
-    public func addUsersToRoom(request: Request, room: DMRoom) throws -> ResponseRepresentable {
-        var room = room
+    public func addUsersToRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard var room = try DMRoom.find(uniqueId) else {
+            throw Abort.notFound
+        }
         room.updated = Date()
         try room.save()
         for user: T in try request.users() {
@@ -55,7 +60,10 @@ public final class DMController<T:DMUser> {
         return try room.makeJSON()
     }
     
-    public func getRoomParticipant(request: Request, room: DMRoom) throws -> ResponseRepresentable {
+    public func getRoomParticipant(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard let room = try DMRoom.find(uniqueId) else {
+            throw Abort.notFound
+        }
         let users: [T] = try room.participants()
         return try users.makeJSON()
     }

@@ -14,9 +14,9 @@ extension Droplet {
     class func makeTestDroplet() throws -> Droplet {
         let drop = Droplet(arguments: ["dummy/path/", "prepare"])
         let postgreSQLConfig: Config = Config(["postgresql" : ["host": "127.0.0.1",
-                                                               "user": "vapordm",
-                                                               "password": "vapordm",
-                                                               "database": "vapordm",
+                                                               "user": "shial",
+                                                               "password": "gah8i6yl",
+                                                               "database": "cosmaTest",
                                                                "port": 5432]])
         try drop.addProvider(VaporPostgreSQL.Provider(config: postgreSQLConfig).self)
         drop.preparations += [User.self]

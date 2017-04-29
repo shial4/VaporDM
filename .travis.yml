@@ -17,7 +17,7 @@ before_script:
       pg_ctl -D /usr/local/var/postgres start;
       createuser -s postgres;
   else
-      sudo service postgresql start
+      sudo service postgresql start;
   fi
   - psql -c 'CREATE DATABASE vapordm;' -U postgres
   - psql -c "CREATE USER vapordm WITH PASSWORD 'vapordm';" -U postgres

@@ -8,7 +8,6 @@
 
 import XCTest
 @testable import Vapor
-@testable import JSON
 @testable import Fluent
 @testable import VaporDM
 
@@ -79,7 +78,7 @@ class testDirectMessage: XCTestCase {
         do {
             let message = try DirectMessage(sender: user, message: testMessage)
             let _: (redirect: JSON, receivers: [User]) = try message.parseMessage()
-            let room = try user.rooms().filter(DMRoom.Constants.id, "1234").all()
+            let room = try user.rooms().filter(DMRoom.Constants.uniqueId, "1234").all()
             XCTAssertNotNil(room)
             XCTAssertTrue(room.count == 1, "Rooms count wrong")
         } catch {
@@ -93,7 +92,7 @@ class testDirectMessage: XCTestCase {
         do {
             let message = try DirectMessage(sender: user, message: testMessage2)
             let _: (redirect: JSON, receivers: [User]) = try message.parseMessage()
-            let room = try user.rooms().filter(DMRoom.Constants.id, "1234").all()
+            let room = try user.rooms().filter(DMRoom.Constants.uniqueId, "1234").all()
             XCTAssertNotNil(room)
             XCTAssertTrue(room.count == 1, "Rooms count wrong")
         } catch {
@@ -117,7 +116,7 @@ class testDirectMessage: XCTestCase {
         do {
             let message = try DirectMessage(sender: user, message: testMessage)
             let _: (redirect: JSON, receivers: [User]) = try message.parseMessage()
-            let room = try user.rooms().filter(DMRoom.Constants.id, "2").all()
+            let room = try user.rooms().filter(DMRoom.Constants.uniqueId, "2").all()
             XCTAssertNotNil(room)
             XCTAssertTrue(room.count == 1, "Rooms count wrong")
         } catch {
@@ -157,7 +156,8 @@ class testDirectMessage: XCTestCase {
             try user2.save()
             var user3 = try User(id: 3)
             try user3.save()
-            let room = try DMRoom(id: 1, name: "Room")
+            var room = DMRoom(uniqueId: UUID().uuidString, name: "Room")
+            try room.save()
             let pivot = try Pivot<User, DMRoom>.getOrCreate(user1, room)
             let pivot1 = try Pivot<User, DMRoom>.getOrCreate(user2, room)
             let pivot2 = try Pivot<User, DMRoom>.getOrCreate(user3, room)
