@@ -42,11 +42,10 @@ public final class DMController<T:DMUser> {
             for userId in users {
                 do {
                     if let user = try T.find(userId) {
-                        print(user.id)
                         _ = try Pivot<T, DMRoom>.getOrCreate(user, room)
                     }
                 } catch {
-                    print("Unable to find user with id: \(userId)")
+                    T.directMessageLog(DMLog(message: "Unable to find user with id: \(userId)\nError message: \(error.localizedDescription)", type: .warning))
                 }
             }
         }
@@ -96,13 +95,15 @@ public final class DMController<T:DMUser> {
     public func chatService<T:DMUser>(request: Request, ws: WebSocket, user: T) {
         ws.onText = { ws, text in
             guard let id = user.id?.string else {
-                print("Unable to get user unigeId")
+                T.directMessageLog(DMLog(message: "Unable to get user unigeId", type: .error))
                 return
             }
             self.connections[id] = ws
             do {
                 let message = try DirectMessage(sender: user, message: text)
                 let response: (redirect: JSON, receivers: [T]) = try message.parseMessage()
+                var offline = response.receivers
+                var online: [T] = []
                 for (id, socket) in self.connections where response.receivers.contains(where: { reveiver -> Bool in
                     guard id == reveiver.id?.string else {
                         return false
@@ -110,15 +111,20 @@ public final class DMController<T:DMUser> {
                     return true
                 }) {
                     try socket.send(response.redirect)
+                    if let removed = offline.remove(id) {
+                        online.append(removed)
+                    }
                 }
+                T.directMessageEvent(DMEvent(online ,message: response.redirect))
+                T.directMessageEvent(DMEvent(offline ,message: response.redirect, status: .failure))
             } catch {
-                print(error)
+                T.directMessageLog(DMLog(message: "\(error.localizedDescription)", type: .error))
             }
         }
         
         ws.onClose = { ws, _, _, _ in
             guard let id = user.id?.string else {
-                print("Unable to get user unigeId")
+                T.directMessageLog(DMLog(message: "Unable to get user unigeId", type: .error))
                 return
             }
             self.connections.removeValue(forKey: id)

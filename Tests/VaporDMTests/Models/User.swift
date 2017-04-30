@@ -62,4 +62,10 @@ extension User: Preparation {
 }
 
 extension User: DMParticipant {
+    public static func directMessageLog(_ log: DMLog) {
+        
+    }
+    public static func directMessageEvent(_ event: DMEvent) {
+        
+    }
 }
