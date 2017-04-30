@@ -47,7 +47,7 @@ class testDirectMessage: XCTestCase {
             "body":"message"]).makeBytes().string()
         XCTAssertNotNil(testMessage)
         do {
-            let message = try DirectMessage(sender: user, message: testMessage)
+            let message = try DMFlowController(sender: user, message: testMessage)
             let response: (redirect: JSON, receivers: [User]) = try message.parseMessage()
             let room: String? = try? response.redirect.extract("room")
             let type: String? = try? response.redirect.extract("type")
@@ -76,7 +76,7 @@ class testDirectMessage: XCTestCase {
             "body":"first"]).makeBytes().string()
         XCTAssertNotNil(testMessage)
         do {
-            let message = try DirectMessage(sender: user, message: testMessage)
+            let message = try DMFlowController(sender: user, message: testMessage)
             let _: (redirect: JSON, receivers: [User]) = try message.parseMessage()
             let room = try user.rooms().filter(DMRoom.Constants.uniqueId, "1234").all()
             XCTAssertNotNil(room)
@@ -90,7 +90,7 @@ class testDirectMessage: XCTestCase {
             "body":"second"]).makeBytes().string()
         XCTAssertNotNil(testMessage2)
         do {
-            let message = try DirectMessage(sender: user, message: testMessage2)
+            let message = try DMFlowController(sender: user, message: testMessage2)
             let _: (redirect: JSON, receivers: [User]) = try message.parseMessage()
             let room = try user.rooms().filter(DMRoom.Constants.uniqueId, "1234").all()
             XCTAssertNotNil(room)
@@ -114,7 +114,7 @@ class testDirectMessage: XCTestCase {
             "body":"second"]).makeBytes().string()
         XCTAssertNotNil(testMessage2)
         do {
-            let message = try DirectMessage(sender: user, message: testMessage)
+            let message = try DMFlowController(sender: user, message: testMessage)
             let _: (redirect: JSON, receivers: [User]) = try message.parseMessage()
             let room = try user.rooms().filter(DMRoom.Constants.uniqueId, "2").all()
             XCTAssertNotNil(room)
@@ -138,8 +138,8 @@ class testDirectMessage: XCTestCase {
             "body":"second"]).makeBytes().string()
         XCTAssertNotNil(testMessage2)
         do {
-            let _: (redirect: JSON, receivers: [User]) = try DirectMessage(sender: user, message: testMessage).parseMessage()
-            let _: (redirect: JSON, receivers: [User]) = try DirectMessage(sender: user, message: testMessage2).parseMessage()
+            let _: (redirect: JSON, receivers: [User]) = try DMFlowController(sender: user, message: testMessage).parseMessage()
+            let _: (redirect: JSON, receivers: [User]) = try DMFlowController(sender: user, message: testMessage2).parseMessage()
             let messages: [DMDirective] = try user.messages().all()
             XCTAssertNotNil(messages)
             XCTAssertTrue(messages.count == 2, "Messages count is wrong")

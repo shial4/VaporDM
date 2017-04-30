@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Dispatch
+import Vapor
 import JSON
 
 public enum DMStatus {
@@ -18,15 +18,11 @@ public enum DMStatus {
 public struct DMEvent {
     public var status: DMStatus
     public var message: JSON
+    public var users: [Model]
     
-    public init<T:DMUser>(_ users: [T], message: JSON, status: DMStatus = .success) {
+    public init<T: DMUser>(_ users: [T], message: JSON, status: DMStatus = .success) {
         self.message = message
         self.status = status
-    }
-    
-    public func dispatch<T:DMUser>(_ sender: T) {
-        DispatchQueue.global().async {
-            T.directMessageEvent(self)
-        }
+        self.users = users
     }
 }

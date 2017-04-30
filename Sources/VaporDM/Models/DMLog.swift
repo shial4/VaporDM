@@ -30,10 +30,4 @@ public struct DMLog {
         self.line = line
         self.functionName = function
     }
-    
-    public func dispatch<T:DMUser>(_ sender: T) {
-        DispatchQueue.global().async {
-            T.directMessageLog(self)
-        }
-    }
 }

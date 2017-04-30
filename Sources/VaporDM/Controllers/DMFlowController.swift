@@ -1,5 +1,5 @@
 //
-//  DirectMessage.swift
+//  DMFlowController.swift
 //  VaporDM
 //
 //  Created by Shial on 18/04/2017.
@@ -10,7 +10,7 @@ import Foundation
 import Vapor
 import Fluent
 
-public enum DirectMessageError: CustomStringConvertible, Error {
+public enum DMFlowControllerError: CustomStringConvertible, Error {
     case missingSenderId
     case jsonWrongContent
     case unableToReadRoomParameter
@@ -48,7 +48,7 @@ private enum Type: Character {
     case readMessage = "R"
 }
 
-struct DirectMessage<T: DMUser> {
+struct DMFlowController<T: DMUser> {
     var room: DMRoom
     var sender: T
     var json: JSON
@@ -56,7 +56,7 @@ struct DirectMessage<T: DMUser> {
     init(sender: T, message: String) throws {
         self.json = try JSON(bytes: Array(message.utf8))
         guard let room = json.object?["room"]?.string else {
-            throw DirectMessageError.unableToReadRoomParameter
+            throw DMFlowControllerError.unableToReadRoomParameter
         }
         self.sender = sender
         if let existsRoom = try DMRoom.find(room) {
@@ -71,10 +71,10 @@ struct DirectMessage<T: DMUser> {
     
     func parseMessage() throws -> (redirect: JSON, receivers: [T]) {
         guard let typeChar = json.object?["type"]?.string?.characters.first else {
-            throw DirectMessageError.unableToReadMessageTypeParameter
+            throw DMFlowControllerError.unableToReadMessageTypeParameter
         }
         guard let type = Type(rawValue: typeChar) else {
-            throw DirectMessageError.unknowMessageType
+            throw DMFlowControllerError.unknowMessageType
         }
         
         switch type {
@@ -84,7 +84,7 @@ struct DirectMessage<T: DMUser> {
             break
         case .messageText:
             guard let body = json.object?["body"]?.string else {
-                throw DirectMessageError.unableToReadBodyParameter
+                throw DMFlowControllerError.unableToReadBodyParameter
             }
             try handleTextMessage(body)
         case .beginTyping:
@@ -108,7 +108,7 @@ struct DirectMessage<T: DMUser> {
     
     fileprivate func composeMessage(from json: JSON) throws -> JSON {
         guard let id = sender.id else {
-            throw DirectMessageError.missingSenderId
+            throw DMFlowControllerError.missingSenderId
         }
         var jsonNode = json.makeNode()
         jsonNode["sender"] = id
