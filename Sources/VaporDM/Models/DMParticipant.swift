@@ -12,7 +12,16 @@ import Fluent
 
 public typealias DMUser = Model & DMParticipant
 
-public protocol DMParticipant {}
+public enum DMUserStatus {
+    case offline
+    case online
+    case away
+}
+
+public protocol DMParticipant {
+    static func directMessageLog(_ log: DMLog)
+    static func directMessageEvent(_ event: DMEvent)
+}
 
 public extension DMParticipant where Self: Model {    
     public func rooms() throws -> Siblings<DMRoom> {
