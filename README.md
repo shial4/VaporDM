@@ -85,6 +85,14 @@ To create room we need send `JSON` with `DMRoom` object inside. Room require min
    "name":"Room Name"
 }
 ```
+However we can add `participants` parameter with users ids if we want to add them during room creation
+```
+{  
+   "uniqueid":"a5b7c179-ff9f-41f7-a2a7-9c127b8bf1ac",
+   "name":"Room Name",
+   "participants":["1234567890","0987654321"]
+}
+```
 
 #### 2 Get room
 method: `GET` uri: `/chat/room/${ROOM_ID}`
