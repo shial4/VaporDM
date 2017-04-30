@@ -58,7 +58,6 @@ class testExtensions: XCTestCase {
         } else {
             XCTAssert(rightKey == "\(User.name)_\(User.idKey)", "\(rightKey)")
         }
-        
     }
     
     func testPivotGetOrCreate() {

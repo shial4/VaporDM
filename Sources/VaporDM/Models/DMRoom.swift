@@ -60,7 +60,7 @@ extension DMRoom: Model {
     public func makeNode(context: Context) throws -> Node {
         return try Node(node: [Constants.id: id,
                                Constants.name: name,
-                               Constants.uniqueId: uniqueId,
+                               Constants.uniqueId: uniqueId.lowercased(),
                                Constants.created: created.timeIntervalSince1970,
                                Constants.updated: updated.timeIntervalSince1970])
     }
@@ -109,6 +109,6 @@ extension DMRoom {
 extension DMRoom {
     public class func find(_ uniqueId: String) throws -> DMRoom? {
         guard let _ = database else { return nil }
-        return try DMRoom.query().filter(Constants.uniqueId, .equals, uniqueId).first()
+        return try DMRoom.query().filter(Constants.uniqueId, .equals, uniqueId.lowercased()).first()
     }
 }
