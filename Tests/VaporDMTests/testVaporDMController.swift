@@ -17,6 +17,7 @@ class testVaporDMController: XCTestCase {
     static let allTests = [
         ("testCreateRoom", testCreateRoom),
         ("testCreateRoomWithExistingUUID", testCreateRoomWithExistingUUID),
+        ("testCreateRoomWithParticipants", testCreateRoomWithParticipants),
         ("testGetRoom", testGetRoom),
         ("testGetRoomFailure", testGetRoomFailure),
         ("testAddUserToRoom", testAddUserToRoom),
@@ -60,7 +61,7 @@ class testVaporDMController: XCTestCase {
         }
         let node = try! JSON(bytes: body)
         let uniqueID = node["uniqueid"]
-        guard let id = uniqueID?.string, id == roomUniqueId else {
+        guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
             XCTFail()
             return
         }
@@ -88,6 +89,57 @@ class testVaporDMController: XCTestCase {
         XCTAssertTrue(response.status.statusCode != 200)
     }
     
+    func testCreateRoomWithParticipants() {
+        var array: [User] = []
+        do {
+            var user1 = try User(id: 1)
+            try user1.save()
+            var user2 = try User(id: 2)
+            try user2.save()
+            var user3 = try User(id: 3)
+            try user3.save()
+            array = [user1,user2,user3]
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        let roomUniqueId = UUID().uuidString
+        let request = try! Request(method: .post, uri: "/chat/room")
+        request.headers["Content-Type"] = "application/json"
+        request.body = JSON([
+            "uniqueid":Node(roomUniqueId),
+            "name":"CreateRoomTest",
+            "participants":["1","2","3"]
+            ]).makeBody()
+        guard let response = try? drop.respond(to: request) else {
+            XCTFail()
+            return
+        }
+        guard let body = response.body.bytes else {
+            XCTFail()
+            return
+        }
+        let node = try! JSON(bytes: body)
+        let uniqueID = node["uniqueid"]
+        guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
+            XCTFail()
+            return
+        }
+        XCTAssertTrue(response.status.statusCode == 200)
+        do {
+            if let receivers: [User] = try DMRoom.find(roomUniqueId)?.participants() {
+                XCTAssertTrue(receivers.count == 3)
+                for u in array {
+                    let p = try User(node: u)
+                    XCTAssertTrue(receivers.contains(where: { user -> Bool in user.id == p.id }), "Rooms missing participant id:\(p.id ?? "-")")
+                }
+            } else {
+                XCTFail()
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testGetRoom() {
         let roomUniqueId = UUID().uuidString
         var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
@@ -108,7 +160,7 @@ class testVaporDMController: XCTestCase {
         }
         let node = try! JSON(bytes: body)
         let uniqueID = node["uniqueid"]
-        guard let id = uniqueID?.string, id == roomUniqueId else {
+        guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
             XCTFail()
             return
         }
@@ -145,7 +197,7 @@ class testVaporDMController: XCTestCase {
             }
             let node = try! JSON(bytes: body)
             let uniqueID = node["uniqueid"]
-            guard let id = uniqueID?.string, id == roomUniqueId else {
+            guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
                 XCTFail()
                 return
             }
@@ -182,7 +234,7 @@ class testVaporDMController: XCTestCase {
             }
             let node = try! JSON(bytes: body)
             let uniqueID = node["uniqueid"]
-            guard let id = uniqueID?.string, id == roomUniqueId else {
+            guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
                 XCTFail()
                 return
             }
@@ -219,7 +271,7 @@ class testVaporDMController: XCTestCase {
             }
             let node = try! JSON(bytes: body)
             let uniqueID = node["uniqueid"]
-            guard let id = uniqueID?.string, id == roomUniqueId else {
+            guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
                 XCTFail()
                 return
             }

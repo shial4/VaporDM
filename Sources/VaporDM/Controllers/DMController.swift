@@ -38,18 +38,30 @@ public final class DMController<T:DMUser> {
     public func createRoom(request: Request) throws -> ResponseRepresentable {
         var room = try request.room()
         try room.save()
+        if let users: [String] = try request.json?.extract("participants") {
+            for userId in users {
+                do {
+                    if let user = try T.find(userId) {
+                        print(user.id)
+                        _ = try Pivot<T, DMRoom>.getOrCreate(user, room)
+                    }
+                } catch {
+                    print("Unable to find user with id: \(userId)")
+                }
+            }
+        }
         return try room.makeJSON()
     }
     
     public func getRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
-        guard let room = try DMRoom.find(uniqueId) else {
+        guard let room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
         return try room.makeJSON()
     }
     
     public func addUsersToRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
-        guard var room = try DMRoom.find(uniqueId) else {
+        guard var room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
         room.updated = Date()
@@ -61,7 +73,7 @@ public final class DMController<T:DMUser> {
     }
     
     public func getRoomParticipant(request: Request, uniqueId: String) throws -> ResponseRepresentable {
-        guard let room = try DMRoom.find(uniqueId) else {
+        guard let room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
         let users: [T] = try room.participants()
