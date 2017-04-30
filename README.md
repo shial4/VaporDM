@@ -50,8 +50,19 @@ let dm = VaporDM<User>(for: drop!)
 ```
 VaporDM require your `User` DataBase model to corespond `DMParticipant` protocol
 ```
-extension User: DMParticipant {}
+extension User: DMParticipant {
+	public static func directMessageLog(_ log: DMLog) {
+        
+    }
+    public static func directMessageEvent(_ event: DMEvent) {
+        
+    }
+}
 ```
+`directMessageLog` Indicate logs from VaporDM. If some error occure inside modul or warning VaporDM will call this method to inform you
+`directMessageEvent` This method is called when message is sent, with status success or failure. Event include as well group of users.
+For example if VaporDM is unable to send real time message over `WebSocket` calls this method to provide array of users to which message was not sent.
+VaporDM calls this method on message sent success and failure, distinguish it by status returned with event. Thanks to this method you are able to send `Notification` to offline users, of course if you want to inform them about received message.
 
 ### 3 Message format
 VaporDM support message `Type` such as:

@@ -22,6 +22,7 @@ class testExtensions: XCTestCase {
         ("testPivotGetOrCreateNilId2", testPivotGetOrCreateNilId2),
         ("testPivotGetOrCreateNilId3", testPivotGetOrCreateNilId3),
         ("testPivotGetOrCreateNilId4", testPivotGetOrCreateNilId4),
+        ("testRemoveUserFromArray", testRemoveUserFromArray),
         ]
     
     var drop: Droplet! = nil
@@ -136,6 +137,24 @@ class testExtensions: XCTestCase {
             XCTAssertNil(pivot)
         } catch RelationError.noIdentifier {
             XCTAssert(true, "no identifier")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testRemoveUserFromArray() {
+        do {
+            var user1 = try User(id: 1)
+            try user1.save()
+            var user2 = try User(id: 2)
+            try user2.save()
+            var user3 = try User(id: 3)
+            try user3.save()
+            var array = [user1,user2,user3]
+            if let removed: User = array.remove("2") {
+                XCTAssert(removed.id == 2, "Wrong user removed")
+            }
+            XCTAssert(array.count == 2, "wrong array count")
         } catch {
             XCTFail(error.localizedDescription)
         }
