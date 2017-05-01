@@ -58,11 +58,13 @@ public final class DMRoom {
 
 extension DMRoom: Model {
     public func makeNode(context: Context) throws -> Node {
-        return try Node(node: [Constants.id: id,
-                               Constants.name: name,
-                               Constants.uniqueId: uniqueId.lowercased(),
-                               Constants.created: created.timeIntervalSince1970,
-                               Constants.updated: updated.timeIntervalSince1970])
+        var node: [String: Node] = [:]
+        node[Constants.id] = id
+        node[Constants.name] = name.makeNode()
+        node[Constants.uniqueId] = uniqueId.lowercased().makeNode()
+        node[Constants.created] = created.timeIntervalSince1970.makeNode()
+        node[Constants.updated] = updated.timeIntervalSince1970.makeNode()
+        return try node.makeNode()
     }
 }
 

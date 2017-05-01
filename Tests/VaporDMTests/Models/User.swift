@@ -63,6 +63,10 @@ extension User: Preparation {
 
 extension User: DMParticipant {
     public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
+        if let senderId: String = try? message.extract(DMKeys.sender) {
+            print(senderId)
+            
+        }
         return message
     }
     public static func directMessageLog(_ log: DMLog) {
