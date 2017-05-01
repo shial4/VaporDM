@@ -102,27 +102,18 @@ public final class DMController<T:DMUser> {
             }
             return
         }
+        do {
+            let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.connected.rawValue).makeNode()]))
+            self.sendMessage(message)
+        } catch {
+            T.directMessage(log: DMLog(message: "\(error)", type: .error))
+        }
         self.connections[id] = ws
         
         ws.onText = { ws, text in
             do {
-                let message = try DMFlowController(sender: user, message: text)
-                let response: (redirect: JSON, receivers: [T]) = try message.parseMessage()
-                var offline = response.receivers
-                var online: [T] = []
-                for (id, socket) in self.connections where response.receivers.contains(where: { reveiver -> Bool in
-                    guard id == reveiver.id?.string else {
-                        return false
-                    }
-                    return true
-                }) {
-                    try socket.send(response.redirect)
-                    if let removed = offline.remove(id) {
-                        online.append(removed)
-                    }
-                }
-                T.directMessage(event: DMEvent(online ,message: response.redirect))
-                T.directMessage(event: DMEvent(offline ,message: response.redirect, status: .failure))
+                let message = try DMFlowController(sender: user, message: try JSON(bytes: Array(text.utf8)))
+                self.sendMessage(message)
             } catch {
                 T.directMessage(log: DMLog(message: "\(error)", type: .error))
             }
@@ -134,6 +125,37 @@ public final class DMController<T:DMUser> {
                 return
             }
             self.connections.removeValue(forKey: id)
+            do {
+                let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.disconnected.rawValue).makeNode()]))
+                self.sendMessage(message)
+            } catch {
+                T.directMessage(log: DMLog(message: "\(error)", type: .error))
+            }
+        }
+    }
+}
+
+extension DMController {
+    fileprivate func sendMessage<T:DMUser>(_ message: DMFlowController<T>) {
+        do {
+            let response: (redirect: JSON, receivers: [T]) = try message.parseMessage()
+            var offline = response.receivers
+            var online: [T] = []
+            for (id, socket) in self.connections where response.receivers.contains(where: { reveiver -> Bool in
+                guard id == reveiver.id?.string else {
+                    return false
+                }
+                return true
+            }) {
+                try socket.send(response.redirect)
+                if let removed = offline.remove(id) {
+                    online.append(removed)
+                }
+            }
+            T.directMessage(event: DMEvent(online ,message: response.redirect))
+            T.directMessage(event: DMEvent(offline ,message: response.redirect, status: .failure))
+        } catch {
+            T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }
     }
 }

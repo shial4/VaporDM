@@ -39,7 +39,14 @@ public enum DMFlowControllerError: CustomStringConvertible, Error {
     }
 }
 
-private enum Type: Character {
+public struct DMKeys {
+    static let room = "room"
+    static let type = "type"
+    static let body = "body"
+    static let sender = "sender"
+}
+
+public enum DMType: Character {
     case connected = "C"
     case disconnected = "D"
     case messageText = "M"
@@ -49,59 +56,96 @@ private enum Type: Character {
 }
 
 struct DMFlowController<T: DMUser> {
-    var room: DMRoom
+    var room: DMRoom?
     var sender: T
     var json: JSON
     
-    init(sender: T, message: String) throws {
-        self.json = try JSON(bytes: Array(message.utf8))
-        guard let room = json.object?["room"]?.string else {
+    init(sender: T, message json: JSON) throws {
+        self.json = json
+        self.sender = sender
+        if let room = json.object?[DMKeys.room]?.string  {
+            self.room = try createRoomIfNedded(id: room)
+        }
+    }
+    
+    func createRoomIfNedded(id: String) throws -> DMRoom? {
+        var room: DMRoom?
+        if let existsRoom = try DMRoom.find(id) {
+            room = existsRoom
+        } else {
+            var newRoom = DMRoom(uniqueId: id, name: "")
+            try newRoom.save()
+            room = newRoom
+        }
+        guard let r = room else {
             throw DMFlowControllerError.unableToReadRoomParameter
         }
-        self.sender = sender
-        if let existsRoom = try DMRoom.find(room) {
-                self.room = existsRoom
-        } else {
-            var newRoom = DMRoom(uniqueId: room, name: "")
-            try newRoom.save()
-            self.room = newRoom
-        }
-        _ = try Pivot<T, DMRoom>.getOrCreate(sender, self.room)
+        _ = try Pivot<T, DMRoom>.getOrCreate(sender, r)
+        return r
     }
     
     func parseMessage() throws -> (redirect: JSON, receivers: [T]) {
-        guard let typeChar = json.object?["type"]?.string?.characters.first else {
+        guard let typeChar = json.object?[DMKeys.type]?.string?.characters.first else {
             throw DMFlowControllerError.unableToReadMessageTypeParameter
         }
-        guard let type = Type(rawValue: typeChar) else {
+        guard let type = DMType(rawValue: typeChar) else {
             throw DMFlowControllerError.unknowMessageType
         }
-        
         switch type {
-        case .connected:
-            break
-        case .disconnected:
-            break
+        case .connected, .disconnected:
+            return try deliverConnectionState(json: json)
         case .messageText:
-            guard let body = json.object?["body"]?.string else {
-                throw DMFlowControllerError.unableToReadBodyParameter
-            }
-            try handleTextMessage(body)
-        case .beginTyping:
-            break
-        case .endTyping:
-            break
-        case .readMessage:
-            break
+            return try deliverMessage(json: json)
+        case .beginTyping, .endTyping, .readMessage:
+            return try deliverMessageState(json: json)
+        }
+    }
+    
+    fileprivate func deliverConnectionState(json: JSON)  throws -> (redirect: JSON, receivers: [T]) {
+        let redirect = try composeMessage(from: json)
+        let receivers: [T] = try handleStatusMessage()
+        return (T.directMessage(redirect), receivers)
+    }
+    
+    fileprivate func deliverMessage(json: JSON)  throws -> (redirect: JSON, receivers: [T]) {
+        guard let body = json.object?[DMKeys.body]?.string else {
+            throw DMFlowControllerError.unableToReadBodyParameter
+        }
+        guard let room = self.room else {
+            throw DMFlowControllerError.unableToReadRoomParameter
+        }
+        try handleTextMessage(body, room: room)
+        let redirect = try composeMessage(from: json)
+        let receivers: [T] = try room.participants(exclude: sender)
+        return (T.directMessage(redirect), receivers)
+    }
+    
+    fileprivate func deliverMessageState(json: JSON)  throws -> (redirect: JSON, receivers: [T]) {
+        guard let room = self.room else {
+            throw DMFlowControllerError.unableToReadRoomParameter
         }
         let redirect = try composeMessage(from: json)
         let receivers: [T] = try room.participants(exclude: sender)
-        return (redirect, receivers)
+        return (T.directMessage(redirect), receivers)
     }
     
-    fileprivate func handleTextMessage(_ body: String) throws {
+    fileprivate func handleStatusMessage() throws -> [T] {
+        let allRooms = try sender.rooms().all()
+        var receivers: [T] = []
+        allRooms.forEach() {
+            do {
+                let participants: [T] = try $0.participants(exclude: sender)
+                receivers = receivers + participants
+            } catch {
+                T.directMessage(log: DMLog(message: "\(error)", type: .error))
+            }
+        }
+        return receivers
+    }
+    
+    fileprivate func handleTextMessage(_ body: String, room: DMRoom) throws {
         var directive = try DMDirective(message: body)
-        directive.room = self.room.id
+        directive.room = room.id
         directive.owner = self.sender.id
         try directive.save()
     }
@@ -111,7 +155,7 @@ struct DMFlowController<T: DMUser> {
             throw DMFlowControllerError.missingSenderId
         }
         var jsonNode = json.makeNode()
-        jsonNode["sender"] = id
+        jsonNode[DMKeys.sender] = id
         return JSON(jsonNode)
     }
 }

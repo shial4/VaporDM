@@ -62,10 +62,15 @@ extension User: Preparation {
 }
 
 extension User: DMParticipant {
+    public static func directMessage(_ message: JSON) -> JSON {
+        return message
+    }
     public static func directMessageLog(_ log: DMLog) {
+        print(log.message)
         
     }
     public static func directMessageEvent(_ event: DMEvent) {
-        
+        let users: [Model] = event.users
+        print(users)
     }
 }

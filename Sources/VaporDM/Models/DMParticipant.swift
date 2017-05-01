@@ -20,11 +20,15 @@ public enum DMUserStatus {
 }
 
 public protocol DMParticipant {
+    static func directMessage(_ message: JSON) -> JSON
     static func directMessageLog(_ log: DMLog)
     static func directMessageEvent(_ event: DMEvent)
 }
 
 public extension DMParticipant {
+    public static func directMessage(message: JSON) -> JSON {
+        return Self.directMessage(message)
+    }
     public static func directMessage(event: DMEvent) {
         DispatchQueue.global().async {
             Self.directMessageEvent(event)

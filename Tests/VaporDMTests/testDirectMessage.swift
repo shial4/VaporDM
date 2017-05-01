@@ -41,10 +41,10 @@ class testDirectMessage: XCTestCase {
     func testTextMessageHandling() {
         var user = try! User(id: 1)
         try! user.save()
-        let testMessage = try! JSON([
+        let testMessage = JSON([
             "room":"1234",
             "type":"M",
-            "body":"message"]).makeBytes().string()
+            "body":"message"])
         XCTAssertNotNil(testMessage)
         do {
             let message = try DMFlowController(sender: user, message: testMessage)
@@ -70,10 +70,10 @@ class testDirectMessage: XCTestCase {
     func testExistingRoomObjectFromMessage() {
         var user = try! User(id: 1)
         try! user.save()
-        let testMessage = try! JSON([
+        let testMessage = JSON([
             "room":"1234",
             "type":"M",
-            "body":"first"]).makeBytes().string()
+            "body":"first"])
         XCTAssertNotNil(testMessage)
         do {
             let message = try DMFlowController(sender: user, message: testMessage)
@@ -84,10 +84,10 @@ class testDirectMessage: XCTestCase {
         } catch {
             XCTFail(error.localizedDescription)
         }
-        let testMessage2 = try! JSON([
+        let testMessage2 = JSON([
             "room":"1234",
             "type":"M",
-            "body":"second"]).makeBytes().string()
+            "body":"second"])
         XCTAssertNotNil(testMessage2)
         do {
             let message = try DMFlowController(sender: user, message: testMessage2)
@@ -103,15 +103,15 @@ class testDirectMessage: XCTestCase {
     func testNewRoomObjectFromMessage() {
         var user = try! User(id: 1)
         try! user.save()
-        let testMessage = try! JSON([
+        let testMessage = JSON([
             "room":"2",
             "type":"M",
-            "body":"first"]).makeBytes().string()
+            "body":"first"])
         XCTAssertNotNil(testMessage)
-        let testMessage2 = try! JSON([
+        let testMessage2 = JSON([
             "room":"4321",
             "type":"M",
-            "body":"second"]).makeBytes().string()
+            "body":"second"])
         XCTAssertNotNil(testMessage2)
         do {
             let message = try DMFlowController(sender: user, message: testMessage)
@@ -127,15 +127,15 @@ class testDirectMessage: XCTestCase {
     func testMessageHistory() {
         var user = try! User(id: 1)
         try! user.save()
-        let testMessage = try! JSON([
+        let testMessage = JSON([
             "room":"2",
             "type":"M",
-            "body":"first"]).makeBytes().string()
+            "body":"first"])
         XCTAssertNotNil(testMessage)
-        let testMessage2 = try! JSON([
+        let testMessage2 = JSON([
             "room":"4321",
             "type":"M",
-            "body":"second"]).makeBytes().string()
+            "body":"second"])
         XCTAssertNotNil(testMessage2)
         do {
             let _: (redirect: JSON, receivers: [User]) = try DMFlowController(sender: user, message: testMessage).parseMessage()
