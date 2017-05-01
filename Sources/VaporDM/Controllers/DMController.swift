@@ -15,7 +15,7 @@ public final class DMController<T:DMUser> {
     
     open var group: String = "chat"
     fileprivate weak var drop: Droplet?
-    fileprivate var connections: [String: WebSocket] = [:]
+    fileprivate var connections: Set<DMConnection> = []
     fileprivate func models() -> [Preparation.Type] {
         return [Pivot<T, DMRoom>.self,
                 DMRoom.self,
@@ -102,13 +102,14 @@ public final class DMController<T:DMUser> {
             }
             return
         }
+        let connectionIdentifier = UUID().uuidString
         do {
             let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.connected.rawValue).makeNode()]))
             self.sendMessage(message)
         } catch {
             T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }
-        self.connections[id] = ws
+        self.connections.insert(DMConnection(id: connectionIdentifier, user: id, socket: ws))
         
         ws.onText = { ws, text in
             do {
@@ -124,7 +125,7 @@ public final class DMController<T:DMUser> {
                 T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
                 return
             }
-            self.connections.removeValue(forKey: id)
+            self.connections.remove(DMConnection(id: connectionIdentifier, user: id, socket: ws))
             do {
                 let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.disconnected.rawValue).makeNode()]))
                 self.sendMessage(message)
@@ -142,14 +143,14 @@ extension DMController {
             guard let redirect = response.redirect else { return }
             var offline = response.receivers
             var online: [T] = []
-            for (id, socket) in self.connections where response.receivers.contains(where: { reveiver -> Bool in
-                guard id == reveiver.id?.string else {
+            for connection in self.connections where response.receivers.contains(where: { reveiver -> Bool in
+                guard connection.userId == reveiver.id?.string else {
                     return false
                 }
                 return true
             }) {
-                try socket.send(redirect)
-                if let removed = offline.remove(id) {
+                try connection.socket.send(redirect)
+                if let removed = offline.remove(connection.userId) {
                     online.append(removed)
                 }
             }
