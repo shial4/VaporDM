@@ -138,7 +138,8 @@ public final class DMController<T:DMUser> {
 extension DMController {
     fileprivate func sendMessage<T:DMUser>(_ message: DMFlowController<T>) {
         do {
-            let response: (redirect: JSON, receivers: [T]) = try message.parseMessage()
+            let response: (redirect: JSON?, receivers: [T]) = try message.parseMessage()
+            guard let redirect = response.redirect else { return }
             var offline = response.receivers
             var online: [T] = []
             for (id, socket) in self.connections where response.receivers.contains(where: { reveiver -> Bool in
@@ -147,13 +148,13 @@ extension DMController {
                 }
                 return true
             }) {
-                try socket.send(response.redirect)
+                try socket.send(redirect)
                 if let removed = offline.remove(id) {
                     online.append(removed)
                 }
             }
-            T.directMessage(event: DMEvent(online ,message: response.redirect))
-            T.directMessage(event: DMEvent(offline ,message: response.redirect, status: .failure))
+            T.directMessage(event: DMEvent(online ,message: redirect))
+            T.directMessage(event: DMEvent(offline ,message: redirect, status: .failure))
         } catch {
             T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }

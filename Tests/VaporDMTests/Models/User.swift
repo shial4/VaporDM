@@ -62,7 +62,7 @@ extension User: Preparation {
 }
 
 extension User: DMParticipant {
-    public static func directMessage(_ message: JSON) -> JSON {
+    public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
         return message
     }
     public static func directMessageLog(_ log: DMLog) {

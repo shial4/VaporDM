@@ -84,7 +84,7 @@ struct DMFlowController<T: DMUser> {
         return r
     }
     
-    func parseMessage() throws -> (redirect: JSON, receivers: [T]) {
+    func parseMessage() throws -> (redirect: JSON?, receivers: [T]) {
         guard let typeChar = json.object?[DMKeys.type]?.string?.characters.first else {
             throw DMFlowControllerError.unableToReadMessageTypeParameter
         }
@@ -93,21 +93,24 @@ struct DMFlowController<T: DMUser> {
         }
         switch type {
         case .connected, .disconnected:
-            return try deliverConnectionState(json: json)
+            return try deliverConnectionState(json: json, type: type)
         case .messageText:
-            return try deliverMessage(json: json)
+            return try deliverMessage(json: json, type: type)
         case .beginTyping, .endTyping, .readMessage:
-            return try deliverMessageState(json: json)
+            return try deliverMessageState(json: json, type: type)
         }
     }
     
-    fileprivate func deliverConnectionState(json: JSON)  throws -> (redirect: JSON, receivers: [T]) {
+    fileprivate func deliverConnectionState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         let redirect = try composeMessage(from: json)
-        let receivers: [T] = try handleStatusMessage()
-        return (T.directMessage(redirect), receivers)
+        if let verify = T.directMessage(redirect, type: type) {
+            let receivers: [T] = try handleStatusMessage()
+            return (verify, receivers)
+        }
+        return (nil,[])
     }
     
-    fileprivate func deliverMessage(json: JSON)  throws -> (redirect: JSON, receivers: [T]) {
+    fileprivate func deliverMessage(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         guard let body = json.object?[DMKeys.body]?.string else {
             throw DMFlowControllerError.unableToReadBodyParameter
         }
@@ -116,17 +119,23 @@ struct DMFlowController<T: DMUser> {
         }
         try handleTextMessage(body, room: room)
         let redirect = try composeMessage(from: json)
-        let receivers: [T] = try room.participants(exclude: sender)
-        return (T.directMessage(redirect), receivers)
+        if let verify = T.directMessage(redirect, type: type) {
+            let receivers: [T] = try room.participants(exclude: sender)
+            return (verify, receivers)
+        }
+        return (nil,[])
     }
     
-    fileprivate func deliverMessageState(json: JSON)  throws -> (redirect: JSON, receivers: [T]) {
+    fileprivate func deliverMessageState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         guard let room = self.room else {
             throw DMFlowControllerError.unableToReadRoomParameter
         }
         let redirect = try composeMessage(from: json)
-        let receivers: [T] = try room.participants(exclude: sender)
-        return (T.directMessage(redirect), receivers)
+        if let verify = T.directMessage(redirect, type: type) {
+            let receivers: [T] = try room.participants(exclude: sender)
+            return (verify, receivers)
+        }
+        return (nil,[])
     }
     
     fileprivate func handleStatusMessage() throws -> [T] {
