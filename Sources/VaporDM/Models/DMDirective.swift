@@ -56,14 +56,16 @@ public final class DMDirective {
 
 extension DMDirective: Model {
     public func makeNode(context: Context) throws -> Node {
-        return try Node(node: [Constants.id: id,
-                               Constants.room: room,
-                               Constants.owner: owner,
-                               Constants.message: message,
-                               Constants.isSeen: isSeen,
-                               Constants.isSystemMessage: isSystemMessage,
-                               Constants.created: created.timeIntervalSince1970,
-                               Constants.updated: updated.timeIntervalSince1970])
+        var node: [String: Node] = [:]
+        node[Constants.id] = id
+        node[Constants.room] = room
+        node[Constants.owner] = owner
+        node[Constants.message] = message.makeNode()
+        node[Constants.isSeen] = isSeen.makeNode()
+        node[Constants.isSystemMessage] = isSystemMessage.makeNode()
+        node[Constants.created] = created.timeIntervalSince1970.makeNode()
+        node[Constants.updated] = updated.timeIntervalSince1970.makeNode()
+        return try node.makeNode()
     }
 }
 

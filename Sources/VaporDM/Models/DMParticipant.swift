@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Dispatch
 import Vapor
 import Fluent
 
@@ -19,8 +20,27 @@ public enum DMUserStatus {
 }
 
 public protocol DMParticipant {
+    static func directMessage(_ message: JSON, type: DMType) -> JSON?
     static func directMessageLog(_ log: DMLog)
     static func directMessageEvent(_ event: DMEvent)
+}
+
+public extension DMParticipant {
+    public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
+        return Self.directMessage(message, type: type)
+    }
+    
+    public static func directMessage(event: DMEvent) {
+        DispatchQueue.global().async {
+            Self.directMessageEvent(event)
+        }
+    }
+    
+    public static func directMessage(log: DMLog) {
+        DispatchQueue.global().async {
+            Self.directMessageLog(log)
+        }
+    }
 }
 
 public extension DMParticipant where Self: Model {    

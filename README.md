@@ -51,11 +51,20 @@ let dm = VaporDM<User>(for: drop!)
 VaporDM require your `User` DataBase model to corespond `DMParticipant` protocol
 ```
 extension User: DMParticipant {
-	public static func directMessageLog(_ log: DMLog) {
+    public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
+        if let senderId: String = try? message.extract(DMKeys.sender) {
+            print(senderId)
+            
+        }
+        return message
+    }
+    public static func directMessageLog(_ log: DMLog) {
+        print(log.message)
         
     }
     public static func directMessageEvent(_ event: DMEvent) {
-        
+        let users: [Model] = event.users
+        print(users)
     }
 }
 ```

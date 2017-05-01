@@ -15,7 +15,7 @@ public final class DMController<T:DMUser> {
     
     open var group: String = "chat"
     fileprivate weak var drop: Droplet?
-    fileprivate var connections: [String: WebSocket] = [:]
+    fileprivate var connections: Set<DMConnection> = []
     fileprivate func models() -> [Preparation.Type] {
         return [Pivot<T, DMRoom>.self,
                 DMRoom.self,
@@ -45,7 +45,7 @@ public final class DMController<T:DMUser> {
                         _ = try Pivot<T, DMRoom>.getOrCreate(user, room)
                     }
                 } catch {
-                    T.directMessageLog(DMLog(message: "Unable to find user with id: \(userId)\nError message: \(error.localizedDescription)", type: .warning))
+                    T.directMessage(log: DMLog(message: "Unable to find user with id: \(userId)\nError message: \(error)", type: .warning))
                 }
             }
         }
@@ -93,41 +93,71 @@ public final class DMController<T:DMUser> {
     }
     
     public func chatService<T:DMUser>(request: Request, ws: WebSocket, user: T) {
-        ws.onText = { ws, text in
-            guard let id = user.id?.string else {
-                T.directMessageLog(DMLog(message: "Unable to get user unigeId", type: .error))
-                return
-            }
-            self.connections[id] = ws
+        guard let id = user.id?.string else {
+            T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
             do {
-                let message = try DirectMessage(sender: user, message: text)
-                let response: (redirect: JSON, receivers: [T]) = try message.parseMessage()
-                var offline = response.receivers
-                var online: [T] = []
-                for (id, socket) in self.connections where response.receivers.contains(where: { reveiver -> Bool in
-                    guard id == reveiver.id?.string else {
-                        return false
-                    }
-                    return true
-                }) {
-                    try socket.send(response.redirect)
-                    if let removed = offline.remove(id) {
-                        online.append(removed)
-                    }
-                }
-                T.directMessageEvent(DMEvent(online ,message: response.redirect))
-                T.directMessageEvent(DMEvent(offline ,message: response.redirect, status: .failure))
+                try ws.close()
             } catch {
-                T.directMessageLog(DMLog(message: "\(error.localizedDescription)", type: .error))
+                T.directMessage(log: DMLog(message: "\(error)", type: .error))
+            }
+            return
+        }
+        let connectionIdentifier = UUID().uuidString
+        do {
+            let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.connected.rawValue).makeNode()]))
+            self.sendMessage(message)
+        } catch {
+            T.directMessage(log: DMLog(message: "\(error)", type: .error))
+        }
+        self.connections.insert(DMConnection(id: connectionIdentifier, user: id, socket: ws))
+        
+        ws.onText = { ws, text in
+            do {
+                let message = try DMFlowController(sender: user, message: try JSON(bytes: Array(text.utf8)))
+                self.sendMessage(message)
+            } catch {
+                T.directMessage(log: DMLog(message: "\(error)", type: .error))
             }
         }
         
         ws.onClose = { ws, _, _, _ in
             guard let id = user.id?.string else {
-                T.directMessageLog(DMLog(message: "Unable to get user unigeId", type: .error))
+                T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
                 return
             }
-            self.connections.removeValue(forKey: id)
+            self.connections.remove(DMConnection(id: connectionIdentifier, user: id, socket: ws))
+            do {
+                let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.disconnected.rawValue).makeNode()]))
+                self.sendMessage(message)
+            } catch {
+                T.directMessage(log: DMLog(message: "\(error)", type: .error))
+            }
+        }
+    }
+}
+
+extension DMController {
+    fileprivate func sendMessage<T:DMUser>(_ message: DMFlowController<T>) {
+        do {
+            let response: (redirect: JSON?, receivers: [T]) = try message.parseMessage()
+            guard let redirect = response.redirect else { return }
+            var offline = response.receivers
+            var online: [T] = []
+            for connection in self.connections where response.receivers.contains(where: { reveiver -> Bool in
+                guard connection.userId == reveiver.id?.string else {
+                    return false
+                }
+                return true
+            }) {
+                try connection.socket.send(redirect)
+                if let removed = offline.remove(connection.userId) {
+                    online.append(removed)
+                }
+            }
+            T.directMessage(event: DMEvent(online ,message: redirect))
+            T.directMessage(event: DMEvent(offline ,message: redirect, status: .failure))
+        } catch {
+            T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }
     }
 }

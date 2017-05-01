@@ -42,4 +42,3 @@ script:
 
 after_success:
     - eval "$(curl -sL https://swift.vapor.sh/codecov)"
-    - bash <(curl -s https://codecov.io/bash)

@@ -29,7 +29,7 @@ extension Pivot where First: DMParticipant, First: DMUser, Second: DMRoom {
         }
         try pivot?.save()
         guard let p = pivot else {
-            throw DirectMessageError.unableToGetOrCreatePivot
+            throw DMFlowControllerError.unableToGetOrCreatePivot
         }
         return p
     }
