@@ -213,13 +213,13 @@ class testDirectMessage: XCTestCase {
     
     func testStatusParticipantsOnTwoRooms() {
         do {
-            var user1 = try User(id: 1)
+            var user1 = try User(id: 11)
             try user1.save()
-            var user2 = try User(id: 2)
+            var user2 = try User(id: 22)
             try user2.save()
-            var user3 = try User(id: 3)
+            var user3 = try User(id: 33)
             try user3.save()
-            var user4 = try User(id: 4)
+            var user4 = try User(id: 44)
             try user4.save()
             var room = DMRoom(uniqueId: UUID().uuidString, name: "Room")
             try room.save()
