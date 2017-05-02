@@ -15,12 +15,12 @@ public enum DMStatus {
     case failure
 }
 
-public struct DMEvent {
+public struct DMEvent<T: DMParticipant> {
     public var status: DMStatus
     public var message: JSON
-    public var users: [Model]
+    public var users: [T]
     
-    public init<T: DMUser>(_ users: [T], message: JSON, status: DMStatus = .success) {
+    public init(_ users: [T], message: JSON, status: DMStatus = .success) {
         self.message = message
         self.status = status
         self.users = users

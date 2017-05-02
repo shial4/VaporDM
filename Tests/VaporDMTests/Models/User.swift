@@ -62,19 +62,15 @@ extension User: Preparation {
 }
 
 extension User: DMParticipant {
-    public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
-        if let senderId: String = try? message.extract(DMKeys.sender) {
-            print(senderId)
-            
-        }
+    public static func directMessage(_ sender: User, message: JSON, type: DMType) -> JSON? {
         return message
     }
     public static func directMessageLog(_ log: DMLog) {
         print(log.message)
         
     }
-    public static func directMessageEvent(_ event: DMEvent) {
-        let users: [Model] = event.users
+    public static func directMessageEvent(_ event: DMEvent<User>) {
+        let users: [User] = event.users
         print(users)
     }
 }
