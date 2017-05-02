@@ -103,7 +103,7 @@ struct DMFlowController<T: DMUser> {
     
     fileprivate func deliverConnectionState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         let redirect = try composeMessage(from: json)
-        if let verify = T.directMessage(redirect, type: type) {
+        if let verify = T.directMessage(sender, message: redirect, type: type) {
             let receivers: [T] = try handleStatusMessage()
             return (verify, receivers)
         }
@@ -119,7 +119,7 @@ struct DMFlowController<T: DMUser> {
         }
         try handleTextMessage(body, room: room)
         let redirect = try composeMessage(from: json)
-        if let verify = T.directMessage(redirect, type: type) {
+        if let verify = T.directMessage(sender, message: redirect, type: type) {
             let receivers: [T] = try room.participants(exclude: sender)
             return (verify, receivers)
         }
@@ -131,7 +131,7 @@ struct DMFlowController<T: DMUser> {
             throw DMFlowControllerError.unableToReadRoomParameter
         }
         let redirect = try composeMessage(from: json)
-        if let verify = T.directMessage(redirect, type: type) {
+        if let verify = T.directMessage(sender, message: redirect, type: type) {
             let receivers: [T] = try room.participants(exclude: sender)
             return (verify, receivers)
         }

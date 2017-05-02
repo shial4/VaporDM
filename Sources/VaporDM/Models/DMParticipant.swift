@@ -20,17 +20,23 @@ public enum DMUserStatus {
 }
 
 public protocol DMParticipant {
-    static func directMessage(_ message: JSON, type: DMType) -> JSON?
+    static func directMessage(_ sender: Self, message: JSON, type: DMType) -> JSON?
     static func directMessageLog(_ log: DMLog)
-    static func directMessageEvent(_ event: DMEvent)
+    static func directMessageEvent(_ event: DMEvent<Self>)
+}
+
+extension DMParticipant {
+    public static func directMessage(_ sender: Self, message: JSON, type: DMType) -> JSON? {
+        return message
+    }
 }
 
 public extension DMParticipant {
-    public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
-        return Self.directMessage(message, type: type)
+    public static func directMessage<T: DMUser>(_ sender: T, message: JSON, type: DMType) -> JSON? {
+        return Self.directMessage(sender, message: message, type: type)
     }
     
-    public static func directMessage(event: DMEvent) {
+    public static func directMessage(event: DMEvent<Self>) {
         DispatchQueue.global().async {
             Self.directMessageEvent(event)
         }

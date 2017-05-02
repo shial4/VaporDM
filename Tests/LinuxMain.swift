@@ -7,5 +7,7 @@ XCTMain([
      testCase(testDirectMessage.allTests),
      testCase(testExtensions.allTests),
      testCase(testVaporDMController.allTests),
+     testCase(testLogs.allTests),
+     testCase(testEvents.allTests),
 ])
 #endif

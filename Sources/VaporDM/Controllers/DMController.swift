@@ -32,6 +32,7 @@ public final class DMController<T:DMUser> {
         chat.post("room", String.self, handler: addUsersToRoom)
         chat.get("room", String.self, handler: getRoom)
         chat.get("room", String.self, "participant", handler: getRoomParticipant)
+        chat.get("participant", T.self, "rooms", handler: getParticipantRooms)
         chat.get("history", String.self, handler: history)
     }
     
@@ -79,17 +80,16 @@ public final class DMController<T:DMUser> {
         return try users.makeJSON()
     }
     
+    public func getParticipantRooms(request: Request, user: T) throws -> ResponseRepresentable {
+        let rooms: [DMRoom] = try user.rooms().all()
+        return try rooms.makeJSON()
+    }
+    
     public func history(request: Request, room: String) throws -> ResponseRepresentable {
         guard let room = try DMRoom.find(room) else {
             throw Abort.notFound
         }
-        guard let from = request.data["from"]?.double else {
-                return try room.messages().makeJSON()
-        }
-        guard let to = request.data["to"]?.double else {
-            return try room.messages(from: from).makeJSON()
-        }
-        return try room.messages(from: from, to: to).makeJSON()
+        return try room.messages(from: request.data["from"]?.double, to: request.data["to"]?.double).makeJSON()
     }
     
     public func chatService<T:DMUser>(request: Request, ws: WebSocket, user: T) {
