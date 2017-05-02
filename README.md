@@ -11,25 +11,16 @@ VaporDM is a simple, yet elegant, Swift library that allows you to integrate cha
 
 ## 🔧 Installation
 
-A quick guide, step by step, about how to use this library.
-
-### 1- Add VaporDM to your project
-
 Add the following dependency to your `Package.swift` file:
-
-For Pre-release version
-```swift
-.Package(url: "https://github.com/shial4/VaporDM.git", Version(0, 1, 0, prereleaseIdentifiers: ["alpha", "2"]))
-```
-
-For official release version (coming soon)
 ```swift
 .Package(url:"https://github.com/shial4/VaporDM.git", majorVersion: 0, minor: 1)
 ```
+or you can use pre-release
+```swift
+.Package(url: "https://github.com/shial4/VaporDM.git", Version(0, 1, 0, prereleaseIdentifiers: ["beta", "1"]))
+```
 
-And then make sure to regenerate your xcode project. You can use `vapor xcode -y` command, if you have the Vapor toolbox installed.
-
-## 🚀 Usage
+## 💊 Usage
 
 ### 1 Import
 
@@ -42,90 +33,45 @@ import VaporDM
 
 The easiest way to setup VaporDM is to create object for example in your `main.swift` file. Like this:
 ```swift
-import Vapor
-import VaporDM
-
 let drop = Droplet()
-let dm = VaporDM<User>(for: drop!)
+let dm = VaporDM<User>(for: drop)
 ```
-VaporDM require your `User` DataBase model to corespond `DMParticipant` protocol
-```
+
+VaporDM is an extension to an existing project. Based on your `User` DataBase model and Vapor's `Fluent` is extending your DataBase with two additional model for storing messages and chat rooms.
+Your `User` model needs to conform to `DMParticipant` protocol. This protocol require implementation of two methods
+- 1 `directMessageLog(_ log: DMLog)` 
+- 2 `directMessageEvent(_ event: DMEvent<User>)`
+
+The third method is optional
+- 3 `directMessage(_ sender: User, message: JSON, type: DMType) -> JSON?` 
+
+Ad 1. First protocol method deliver VaporDM logs to you. If you are using any logging server this method might be useful for you to report them futher. `DMLog` store information about thrown error, warning or any other informations. When something wrong happen you will know.
+
+Ad 2. Second function deliver two events. One tells you about users group to which real time message over the `WebSocket` was delivered successfully. Second inform you about users group to which message wasn't deliver, in that case you can handle this callback and send to them notification, if you have server with mobile users. 
+
+Ad 3. Last protocol message is optional and is called everytime before message is going to be send to receivers. They can be chat room participants or every user which is interested in this message, for example about your `online` status. However your `User` model have additional settings like privacy or chat visibility. In that case you may cancel message before is sent by returning nil. Default implementation should redirect `message` argument as a return object.
+
+#### DMParticipant Protocol
+```swift
 extension User: DMParticipant {
-    public static func directMessage(_ message: JSON, type: DMType) -> JSON? {
-        if let senderId: String = try? message.extract(DMKeys.sender) {
-            print(senderId)
-            
-        }
+    public static func directMessage(_ sender: User, message: JSON, type: DMType) -> JSON? {
         return message
     }
     public static func directMessageLog(_ log: DMLog) {
         print(log.message)
         
     }
-    public static func directMessageEvent(_ event: DMEvent) {
-        let users: [Model] = event.users
+    public static func directMessageEvent(_ event: DMEvent<User>) {
+        let users: [User] = event.users
         print(users)
     }
 }
 ```
-`directMessageLog` Indicate logs from VaporDM. If some error occure inside modul or warning VaporDM will call this method to inform you
-`directMessageEvent` This method is called when message is sent, with status success or failure. Event include as well group of users.
-For example if VaporDM is unable to send real time message over `WebSocket` calls this method to provide array of users to which message was not sent.
-VaporDM calls this method on message sent success and failure, distinguish it by status returned with event. Thanks to this method you are able to send `Notification` to offline users, of course if you want to inform them about received message.
 
-### 3 Message format
-VaporDM support message `Type` such as:
-```
-connected = "C"
-disconnected = "D"
-messageText = "M"
-beginTyping = "B"
-endTyping = "E"
-readMessage = "R"
-```
-To send text message we will use type `M` and address it to `DMRoom`. Vapor Direct Message send messages to room which are dispatch to room participants. Sending Message to non existing room will create that room.
-`DMRoom` repreents group of users between messages are sent.
-Text message example:
-```
-{  
-   "room":"a5b7c179-ff9f-41f7-a2a7-9c127b8bf1ac",
-   "type":"M",
-   "body":"This is a text message"
-}
-```
-
-To work with `VaporDM` you will need to know how to use endpoints for creating message rooms adding/removing users and geting list of room participants.
-
-#### 1 Create message room
-method: `POST` uri: `/chat/room/${ROOM_ID}`
-To create room we need send `JSON` with `DMRoom` object inside. Room require minimum `uniqueid` and `name` to be in this json.
-```
-{  
-   "uniqueid":"a5b7c179-ff9f-41f7-a2a7-9c127b8bf1ac",
-   "name":"Room Name"
-}
-```
-However we can add `participants` parameter with users ids if we want to add them during room creation
-```
-{  
-   "uniqueid":"a5b7c179-ff9f-41f7-a2a7-9c127b8bf1ac",
-   "name":"Room Name",
-   "participants":["1234567890","0987654321"]
-}
-```
-
-#### 2 Get room
-method: `GET` uri: `/chat/room/${ROOM_ID}`
-
-#### 3 Add User/Users to room
-method: `POST` uri: `/chat/room/${ROOM_ID}`
-To add users simple send `JSON` with single user or `JSON` with array of users.
-
-#### 4 Get room participant
-method: `GET` uri: `/chat/room/${ROOM_ID}/participant`
-
-### 2 Connection
-To connect under `WebSocket` simple use this url `"ws://${Your_host_and_additional_path}/chat/service/${ROOM_ID}"`
+## 📚 Documentation
+* ### 🗂 Endpoints
+* ### 💬 Message Flow
+* ### 🗄 Data Base
 
 ## ⭐ Contributing
 
@@ -135,6 +81,6 @@ Be welcome to contribute to this project! :)
 
 You can join the Vapor [slack](http://vapor.team). Or you can create an issue on GitHub.
 
-## ⭐ License
+## 📝 License
 
 This project was released under the [MIT](license) license.
