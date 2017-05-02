@@ -24,6 +24,9 @@ class testVaporDMController: XCTestCase {
         ("testAddUsersToRoom", testAddUsersToRoom),
         ("testAddUsersToRoomWithVeryfication", testAddUsersToRoomWithVeryfication),
         ("testGetRoomParticipant", testGetRoomParticipant),
+        ("testGetParticipantRooms", testGetParticipantRooms),
+        ("testGetNotFoundRoomHistory", testGetNotFoundRoomHistory),
+        ("testGetRoomHistory", testGetRoomHistory),
         ]
     
     var drop: Droplet! = nil
@@ -328,6 +331,77 @@ class testVaporDMController: XCTestCase {
             }
         } catch {
             XCTFail(error.localizedDescription)
+        }
+        XCTAssertTrue(response.status.statusCode == 200)
+    }
+    
+    func testGetParticipantRooms() {
+        var room1 = DMRoom(uniqueId: UUID().uuidString, name: "FRoom")
+        var room2 = DMRoom(uniqueId: UUID().uuidString, name: "SRoom")
+        var room3 = DMRoom(uniqueId: UUID().uuidString, name: "TRoom")
+        do {
+            try room1.save()
+            try room2.save()
+            try room3.save()
+            var user = try User(id: 1)
+            try user.save()
+            let _ = try Pivot<User, DMRoom>.getOrCreate(user, room1)
+            let _ = try Pivot<User, DMRoom>.getOrCreate(user, room2)
+            let _ = try Pivot<User, DMRoom>.getOrCreate(user, room3)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        let request = try! Request(method: .get, uri: "/chat/participant/1/rooms")
+        request.headers["Content-Type"] = "application/json"
+        guard let response = try? drop.respond(to: request) else {
+            XCTFail()
+            return
+        }
+        guard let body = response.body.bytes else {
+            XCTFail()
+            return
+        }
+        let json = try! JSON(bytes: body)
+        guard let array = json.pathIndexableArray else {
+            XCTFail()
+            return
+        }
+        do {
+            XCTAssertTrue(array.count == 3, "Rooms wrong number \(array.count)")
+            try array.forEach() {
+                let room = try DMRoom(node: $0)
+                XCTAssertTrue(["FRoom","SRoom","TRoom"].contains(room.name), "Rooms missing")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        XCTAssertTrue(response.status.statusCode == 200)
+    }
+    
+    func testGetNotFoundRoomHistory() {
+        let roomUniqueId = UUID().uuidString
+        let request = try! Request(method: .get, uri: "/chat/history/\(roomUniqueId)")
+        request.headers["Content-Type"] = "application/json"
+        guard let response = try? drop.respond(to: request) else {
+            XCTFail()
+            return
+        }
+        XCTAssertTrue(response.status.statusCode == 404)
+    }
+    
+    func testGetRoomHistory() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        do {
+            try room.save()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        let request = try! Request(method: .get, uri: "/chat/history/\(roomUniqueId)")
+        request.headers["Content-Type"] = "application/json"
+        guard let response = try? drop.respond(to: request) else {
+            XCTFail()
+            return
         }
         XCTAssertTrue(response.status.statusCode == 200)
     }

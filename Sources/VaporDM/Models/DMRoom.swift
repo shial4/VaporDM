@@ -86,14 +86,20 @@ extension DMRoom: Preparation {
 
 extension DMRoom {
     public func messages() throws -> [DMDirective] {
-        return try children().all()
+        return try children(DMDirective.Constants.room).all()
     }
     
-    public func messages(from: Double, to: Double? = nil) throws -> [DMDirective] {
-        guard let to = to else {
-            return try children().filter(DMDirective.Constants.created, .greaterThan, from).all()
+    public func messages(from: Double? = nil, to: Double? = nil) throws -> [DMDirective] {
+        switch (from, to) {
+        case let (from, to)  as (Double, Double):
+            return try children(DMDirective.Constants.room).filter(DMDirective.Constants.created, .greaterThan, from).filter(DMDirective.Constants.created, .lessThan, to).all()
+        case let (from, nil) as (Double, Double?):
+            return try children(DMDirective.Constants.room).filter(DMDirective.Constants.created, .greaterThan, from).all()
+        case let (nil, to) as (Double?, Double):
+            return try children(DMDirective.Constants.room).filter(DMDirective.Constants.created, .lessThan, to).all()
+        default:
+            return try children(DMDirective.Constants.room).all()
         }
-        return try children().filter(DMDirective.Constants.created, .greaterThan, from).filter(DMDirective.Constants.created, .lessThan, to).all()
     }
     
     public func participant<T:DMUser>() throws -> Siblings<T> {
