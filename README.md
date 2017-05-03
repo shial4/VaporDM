@@ -68,10 +68,10 @@ extension User: DMParticipant {
 }
 ```
 
-## 📚 Documentation
-* ### 🗂 Endpoints
-* ### 💬 Message Flow
-* ### 🗄 Data Base
+## 📚 [Documentation](https://shial4.github.io/VaporDM)
+* ### 🗂 [Endpoints](https://shial4.github.io/VaporDM/Classes/DMController.html)
+* ### 💬 [Message Flow](https://shial4.github.io/VaporDM/Protocols/DMParticipant.html)
+* ### 🗄 [Data Base](https://shial4.github.io/VaporDM/Classes.html)
 
 ## ⭐ Contributing
 
