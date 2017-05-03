@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html"> Docs</a> (80% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html"> Reference</a>
+        <img id="carat" src="img/carat.png" />
+          Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/DMController.html">DMController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DMDirective.html">DMDirective</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DMRoom.html">DMRoom</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/VaporDM.html">VaporDM</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/DMFlowControllerError.html">DMFlowControllerError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/DMLogType.html">DMLogType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/DMStatus.html">DMStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/DMType.html">DMType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/DMUserStatus.html">DMUserStatus</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/Pivot.html">Pivot</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/DMParticipant.html">DMParticipant</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structs</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/DMEvent.html">DMEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs.html#/s:V7VaporDM6DMKeys">DMKeys</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/DMLog.html">DMLog</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Typealiases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:7VaporDM6DMUser">DMUser</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 id='vapordm' class='heading'>VaporDM</h1>
+
+<p><a href="http://swift.org"><img src="https://img.shields.io/badge/Swift-3.1-brightgreen.svg" alt="Language"></a>
+<img src="https://img.shields.io/badge/Vapor-1.0-green.svg" alt="Vapor">
+<a href="https://raw.githubusercontent.com/shial4/VaporDM/master/license"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license"></a>
+<a href="https://travis-ci.org/shial4/VaporDM"><img src="https://travis-ci.org/shial4/VaporDM.svg?branch=master" alt="Build Status"></a>
+<a href="https://circleci.com/gh/shial4/VaporDM"><img src="https://circleci.com/gh/shial4/VaporDM.svg?style=svg" alt="CircleCI"></a>
+<a href="https://codecov.io/gh/shial4/VaporDM"><img src="https://codecov.io/gh/shial4/VaporDM/branch/master/graph/badge.svg" alt="codecov"></a></p>
+
+<p>VaporDM is a simple, yet elegant, Swift library that allows you to integrate chat system into your Vapor project.</p>
+<h2 id='installation' class='heading'>🔧 Installation</h2>
+
+<p>Add the following dependency to your <code>Package.swift</code> file:</p>
+<pre class="highlight swift"><code><span class="o">.</span><span class="kt">Package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span><span class="s">"https://github.com/shial4/VaporDM.git"</span><span class="p">,</span> <span class="nv">majorVersion</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">minor</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre>
+
+<p>or you can use pre-release</p>
+<pre class="highlight swift"><code><span class="o">.</span><span class="kt">Package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/shial4/VaporDM.git"</span><span class="p">,</span> <span class="kt">Version</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">prereleaseIdentifiers</span><span class="p">:</span> <span class="p">[</span><span class="s">"beta"</span><span class="p">,</span> <span class="s">"1"</span><span class="p">]))</span>
+</code></pre>
+<h2 id='usage' class='heading'>💊 Usage</h2>
+<h3 id='1-import' class='heading'>1 Import</h3>
+
+<p>It&rsquo;s really easy to get started with the VaporDM library! First you need to import the library, by adding this to the top of your Swift file:</p>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">VaporDM</span>
+</code></pre>
+<h3 id='2-initialize' class='heading'>2 Initialize</h3>
+
+<p>The easiest way to setup VaporDM is to create object for example in your <code>main.swift</code> file. Like this:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">drop</span> <span class="o">=</span> <span class="kt">Droplet</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">dm</span> <span class="o">=</span> <span class="kt">VaporDM</span><span class="o">&lt;</span><span class="kt">User</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="n">drop</span><span class="p">)</span>
+</code></pre>
+
+<p>VaporDM is an extension to an existing project. Based on your <code>User</code> DataBase model and Vapor&rsquo;s <code>Fluent</code> is extending your DataBase with two additional model for storing messages and chat rooms.
+Your <code>User</code> model needs to conform to <code>DMParticipant</code> protocol. This protocol require implementation of two methods</p>
+
+<ul>
+<li>1 <code>directMessageLog(_ log: DMLog)</code></li>
+<li>2 <code>directMessageEvent(_ event: DMEvent&lt;User&gt;)</code></li>
+</ul>
+
+<p>The third method is optional</p>
+
+<ul>
+<li>3 <code>directMessage(_ sender: User, message: JSON, type: DMType) -&gt; JSON?</code></li>
+</ul>
+
+<p>Ad 1. First protocol method deliver VaporDM logs to you. If you are using any logging server this method might be useful for you to report them futher. <code>DMLog</code> store information about thrown error, warning or any other informations. When something wrong happen you will know.</p>
+
+<p>Ad 2. Second function deliver two events. One tells you about users group to which real time message over the <code>WebSocket</code> was delivered successfully. Second inform you about users group to which message wasn&rsquo;t deliver, in that case you can handle this callback and send to them notification, if you have server with mobile users. </p>
+
+<p>Ad 3. Last protocol message is optional and is called everytime before message is going to be send to receivers. They can be chat room participants or every user which is interested in this message, for example about your <code>online</code> status. However your <code>User</code> model have additional settings like privacy or chat visibility. In that case you may cancel message before is sent by returning nil. Default implementation should redirect <code>message</code> argument as a return object.</p>
+<h4 id='dmparticipant-protocol' class='heading'>DMParticipant Protocol</h4>
+<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">User</span><span class="p">:</span> <span class="kt">DMParticipant</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">directMessage</span><span class="p">(</span><span class="n">_</span> <span class="nv">sender</span><span class="p">:</span> <span class="kt">User</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">JSON</span><span class="p">,</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">DMType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">JSON</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">message</span>
+    <span class="p">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">directMessageLog</span><span class="p">(</span><span class="n">_</span> <span class="nv">log</span><span class="p">:</span> <span class="kt">DMLog</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="p">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">directMessageEvent</span><span class="p">(</span><span class="n">_</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">DMEvent</span><span class="o">&lt;</span><span class="kt">User</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">users</span><span class="p">:</span> <span class="p">[</span><span class="kt">User</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">users</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">users</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<h2 id='documentation' class='heading'>📚 Documentation</h2>
+
+<ul>
+<li>### 🗂 Endpoints</li>
+<li>### 💬 Message Flow</li>
+<li>### 🗄 Data Base</li>
+</ul>
+<h2 id='contributing' class='heading'>⭐ Contributing</h2>
+
+<p>Be welcome to contribute to this project! :)</p>
+<h2 id='questions' class='heading'>❓ Questions</h2>
+
+<p>You can join the Vapor <a href="http://vapor.team">slack</a>. Or you can create an issue on GitHub.</p>
+<h2 id='license' class='heading'>📝 License</h2>
+
+<p>This project was released under the <a href="license">MIT</a> license.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-05-03)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

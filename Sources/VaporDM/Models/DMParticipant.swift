@@ -15,13 +15,12 @@ import Fluent
 public typealias DMUser = Model & DMParticipant
 
 /// User status
-///
-/// - offline: if user is offline
-/// - online: is user is online
-/// - away: is user is away from keyboard
 public enum DMUserStatus {
+    /// if user is offline
     case offline
+    ///  is user is online
     case online
+    ///  is user is away from keyboard
     case away
 }
 

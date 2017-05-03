@@ -10,12 +10,11 @@ import Foundation
 import Vapor
 import JSON
 
-/// Event status
-///
-/// - success: if message was sent
-/// - failure: if message wasn't sent
+/// Event status, may be success or failure
 public enum DMStatus {
+    ///  if message was sent
     case success
+    ///  if message wasn't sent
     case failure
 }
 

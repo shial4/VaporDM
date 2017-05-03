@@ -51,20 +51,19 @@ public struct DMKeys {
 }
 
 
-/// Type of direct message
-///
-/// - connected: user did connect to WebSocket
-/// - disconnected: user did disconnect from WebSocket
-/// - messageText: text message, indicating there should be body parameter in JSON
-/// - beginTyping: user start typing even message
-/// - endTyping: user end typing event message
-/// - readMessage: user did read message
+/// Direct message type
 public enum DMType: Character {
+    /// User did connect to WebSocket
     case connected = "C"
+    /// User did disconnect from WebSocket
     case disconnected = "D"
+    /// Text message, indicating there should be body parameter in JSON
     case messageText = "M"
+    /// User start typing even message
     case beginTyping = "B"
+    /// User end typing event message
     case endTyping = "E"
+    /// User did read message
     case readMessage = "R"
 }
 

@@ -11,13 +11,12 @@ import Vapor
 import Dispatch
 
 /// VaporDM's Log type
-///
-/// - info: Information
-/// - warning: Warning, about something
-/// - error: Something bad happen
 public enum DMLogType {
+    /// type represents information
     case info
+    /// type represents warning
     case warning
+    /// type indicating error
     case error
 }
 

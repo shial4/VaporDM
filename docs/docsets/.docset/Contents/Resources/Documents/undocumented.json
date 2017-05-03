@@ -1,0 +1,299 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 14,
+      "symbol": "DMController",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 16,
+      "symbol": "DMController.group",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 26,
+      "symbol": "DMController.init(drop:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 39,
+      "symbol": "DMController.createRoom(request:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 56,
+      "symbol": "DMController.getRoom(request:uniqueId:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 63,
+      "symbol": "DMController.addUsersToRoom(request:uniqueId:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 75,
+      "symbol": "DMController.getRoomParticipant(request:uniqueId:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 83,
+      "symbol": "DMController.getParticipantRooms(request:user:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 88,
+      "symbol": "DMController.history(request:room:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
+      "line": 95,
+      "symbol": "DMController.chatService(request:ws:user:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 16,
+      "symbol": "DMFlowControllerError.missingSenderId",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 17,
+      "symbol": "DMFlowControllerError.jsonWrongContent",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 18,
+      "symbol": "DMFlowControllerError.unableToReadRoomParameter",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 19,
+      "symbol": "DMFlowControllerError.unableToReadMessageTypeParameter",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 20,
+      "symbol": "DMFlowControllerError.unknowMessageType",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 21,
+      "symbol": "DMFlowControllerError.unableToReadBodyParameter",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 22,
+      "symbol": "DMFlowControllerError.unableToGetOrCreatePivot",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 63,
+      "symbol": "DMType.connected",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 64,
+      "symbol": "DMType.disconnected",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 65,
+      "symbol": "DMType.messageText",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 66,
+      "symbol": "DMType.beginTyping",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 67,
+      "symbol": "DMType.endTyping",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
+      "line": 68,
+      "symbol": "DMType.readMessage",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMEvent.swift",
+      "line": 18,
+      "symbol": "DMStatus.success",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMEvent.swift",
+      "line": 19,
+      "symbol": "DMStatus.failure",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMEvent.swift",
+      "line": 24,
+      "symbol": "DMEvent.status",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMEvent.swift",
+      "line": 25,
+      "symbol": "DMEvent.message",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMEvent.swift",
+      "line": 26,
+      "symbol": "DMEvent.users",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMLog.swift",
+      "line": 19,
+      "symbol": "DMLogType.info",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMLog.swift",
+      "line": 20,
+      "symbol": "DMLogType.warning",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMLog.swift",
+      "line": 21,
+      "symbol": "DMLogType.error",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
+      "line": 23,
+      "symbol": "DMUserStatus.offline",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
+      "line": 24,
+      "symbol": "DMUserStatus.online",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
+      "line": 25,
+      "symbol": "DMUserStatus.away",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
+      "line": 47,
+      "symbol": "DMParticipant.directMessageEvent(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
+      "line": 61,
+      "symbol": "DMParticipant.directMessage(event:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
+      "line": 67,
+      "symbol": "DMParticipant.directMessage(log:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMRoom.swift",
+      "line": null,
+      "symbol": "DMRoom",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMRoom.swift",
+      "line": null,
+      "symbol": "DMRoom",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMRoom.swift",
+      "line": null,
+      "symbol": "DMRoom",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMRoom.swift",
+      "line": null,
+      "symbol": "DMRoom",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMRoom.swift",
+      "line": 13,
+      "symbol": "DMRoom",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/shial/Development/www/VaporDM"
+}
