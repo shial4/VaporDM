@@ -9,13 +9,23 @@
 import Fluent
 
 extension Pivot where First: DMParticipant, First: DMUser, Second: DMRoom {
+    /// return key string for left Entity object under this Pivot
     static var leftKey: String {
         return "\(left.name)_\(left.idKey)"
     }
+    
+    /// return key string for right Entity object under this Pivot
     static var rightKey: String {
         return "\(right.name)_\(right.idKey)"
     }
     
+    /// Create Pivot between two entities if needed. Otherwise return existing one
+    ///
+    /// - Parameters:
+    ///   - first: Entity object between pivot should be created
+    ///   - second: Entity object between pivot should be created
+    /// - Returns: Pivot object between first and second Entity objects
+    /// - Throws: If anything bad occurred during this method, error message will be thrown
     public static func getOrCreate(_ first: Entity, _ second: Entity) throws -> Pivot {
         var pivot: Pivot<First, Second>?
         guard let firstId = first.id, let secondId = second.id else {
