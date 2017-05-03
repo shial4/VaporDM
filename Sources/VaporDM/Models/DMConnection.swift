@@ -9,11 +9,20 @@
 import Foundation
 import Vapor
 
+/// VaporsDM connection, holds User and WebSocket with custom id to allow one user for multiple connections.
 struct DMConnection {
+    /// Connection id
     var id: String
+    /// User id
     var userId: String
+    /// Websocket under user is connected
     var socket: WebSocket
-    
+    /// Create DMConnection object
+    ///
+    /// - Parameters:
+    ///   - id: connection id, should be unique
+    ///   - user: user id
+    ///   - socket: WebSocket
     init(id: String, user: String, socket: WebSocket) {
         self.id = id
         self.userId = user

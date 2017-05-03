@@ -31,11 +31,28 @@ public final class DMController<T:DMUser> {
         chat.post("room", handler: createRoom)
         chat.post("room", String.self, handler: addUsersToRoom)
         chat.get("room", String.self, handler: getRoom)
-        chat.get("room", String.self, "participant", handler: getRoomParticipant)
+        chat.get("room", String.self, "participant", handler: getRoomParticipants)
         chat.get("participant", T.self, "rooms", handler: getParticipantRooms)
         chat.get("history", String.self, handler: history)
     }
     
+    /// Create chat room.
+    ///```
+    /// POST: /chat/room
+    /// "Content-Type" = "application/json"
+    ///```
+    /// In Body DMRoom object with minimum uniqueid and name parameters.
+    ///```
+    /// {
+    ///     "uniqueid":"",
+    ///     "name":"RoomName"
+    /// }
+    ///```
+    /// - Parameters:
+    ///   - request: request object
+    ///   - uniqueId: Chat room UUID
+    /// - Returns: CHat room
+    /// - Throws: If room is not found or query do fail
     public func createRoom(request: Request) throws -> ResponseRepresentable {
         var room = try request.room()
         try room.save()
@@ -53,6 +70,18 @@ public final class DMController<T:DMUser> {
         return try room.makeJSON()
     }
     
+    /// Get chat room.
+    ///
+    ///```
+    /// GET: /chat/room/${room_uuid}
+    /// "Content-Type" = "application/json"
+    ///```
+    ///
+    /// - Parameters:
+    ///   - request: request object
+    ///   - uniqueId: Chat room UUID
+    /// - Returns: Chat room
+    /// - Throws: If room is not found or query do fail
     public func getRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
         guard let room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
@@ -60,6 +89,32 @@ public final class DMController<T:DMUser> {
         return try room.makeJSON()
     }
     
+    /// Add users to room.
+    ///
+    ///```
+    /// POST: /chat/room/${room_uuid}
+    /// "Content-Type" = "application/json"
+    ///```
+    /// In Body Your Fluent Model or array of models which is associated with VaporDM.
+    ///```
+    /// {
+    ///     [
+    ///         ${<User: Model, DMParticipant>},
+    ///         ${<User: Model, DMParticipant>}
+    ///     ]
+    /// }
+    ///```
+    /// Or
+    ///```
+    /// {
+    ///     ${<User: Model, DMParticipant>}
+    /// }
+    ///```
+    /// - Parameters:
+    ///   - request: request object
+    ///   - uniqueId: Chat room UUID
+    /// - Returns: CHat room
+    /// - Throws: If room is not found or query do fail
     public func addUsersToRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
         guard var room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
@@ -72,7 +127,19 @@ public final class DMController<T:DMUser> {
         return try room.makeJSON()
     }
     
-    public func getRoomParticipant(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+    /// Get DMRoom participants
+    ///
+    ///```
+    /// GET: /chat/room/${room_uuid}/participant
+    /// "Content-Type" = "application/json"
+    ///```
+    ///
+    /// - Parameters:
+    ///   - request: request object
+    ///   - uniqueId: Chat room UUID
+    /// - Returns: Array of You Fluent object, which corresponds to DMParticipant and FLuent's Model Protocols
+    /// - Throws: If room is not found or query do fail
+    public func getRoomParticipants(request: Request, uniqueId: String) throws -> ResponseRepresentable {
         guard let room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
@@ -80,11 +147,33 @@ public final class DMController<T:DMUser> {
         return try users.makeJSON()
     }
     
+    /// Get DMParticipant rooms. This request passes in url Your Fluent model `id` which is associated with VaporDM's
+    ///
+    ///```
+    /// GET: /chat/participant/${user_id}/rooms
+    /// "Content-Type" = "application/json"
+    ///```
+    /// - Parameters:
+    ///   - request: request object
+    ///   - user: Your Fluent Associated model with VaporDM
+    /// - Returns: Array of DMRoom object which your User participate
+    /// - Throws: If query goes wrong
     public func getParticipantRooms(request: Request, user: T) throws -> ResponseRepresentable {
         let rooms: [DMRoom] = try user.rooms().all()
         return try rooms.makeJSON()
     }
     
+    /// Get chat room history. You can pass in request data `from` and `to` values which constrain query
+    ///```
+    /// GET: /chat/history/${room_uuid}
+    /// "Content-Type" = "application/json"
+    ///```
+    ///
+    /// - Parameters:
+    ///   - request: request object
+    ///   - room: chat room UUID for which history will be retirned
+    /// - Returns: Array of DMDirective objects
+    /// - Throws: If room is not found or query will throw
     public func history(request: Request, room: String) throws -> ResponseRepresentable {
         guard let room = try DMRoom.find(room) else {
             throw Abort.notFound
@@ -92,6 +181,15 @@ public final class DMController<T:DMUser> {
         return try room.messages(from: request.data["from"]?.double, to: request.data["to"]?.double).makeJSON()
     }
     
+    /// Called when a WebSocket client connects to the server
+    ///```
+    /// ws: /chat/service/${user_id}
+    ///```
+    ///
+    /// - Parameters:
+    ///   - request: WebSocket connection request
+    ///   - ws: WebSocket
+    ///   - user: User which did connect
     public func chatService<T:DMUser>(request: Request, ws: WebSocket, user: T) {
         guard let id = user.id?.string else {
             T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
@@ -137,6 +235,10 @@ public final class DMController<T:DMUser> {
 }
 
 extension DMController {
+    
+    /// Send message over the WebSocket thanks to DMFlowController `parseMessage` method result.
+    ///
+    /// - Parameter message: DMFlowController instance
     fileprivate func sendMessage<T:DMUser>(_ message: DMFlowController<T>) {
         do {
             let response: (redirect: JSON?, receivers: [T]) = try message.parseMessage()
@@ -163,10 +265,19 @@ extension DMController {
 }
 
 extension Request {
+    
+    /// Parse Requesto JSON to chat room object
+    ///
+    /// - Returns: chat room object
+    /// - Throws: Error if something goes wrong
     func room() throws -> DMRoom {
         guard let json = json else { throw Abort.badRequest }
         return try DMRoom(node: json)
     }
+    /// Parse Request JSON to your Fluent model
+    ///
+    /// - Returns: Array of you Fluent models
+    /// - Throws: Error if something goes wrong
     func users<T:DMUser>() throws -> [T] {
         guard let json = json else { throw Abort.badRequest }
         guard let array = json.pathIndexableArray else {
