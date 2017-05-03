@@ -13,7 +13,7 @@ import Fluent
 public final class DMRoom {
     public static var entity = "dmroom"
     public var exists = false
-    
+    /// Chat room id
     public var id: Node?
     
     struct Constants {
@@ -23,12 +23,19 @@ public final class DMRoom {
         static let updated = "updated"
         static let name = "name"
     }
-    
+    /// Chat room name
     public var name: String
+    /// Char room UUID
     public var uniqueId: String
+    /// Chat room created date
     public var created: Date = Date()
+    /// Chat room updated date
     public var updated: Date = Date()
-    
+    /// Initialize object with UUID and name
+    ///
+    /// - Parameters:
+    ///   - uniqueId: UUID of chat room
+    ///   - name: Name of char room
     public init(uniqueId: String, name: String) {
         self.uniqueId = uniqueId
         self.name = name
@@ -85,10 +92,20 @@ extension DMRoom: Preparation {
 }
 
 extension DMRoom {
+    /// Return all messages under this chat room
+    ///
+    /// - Returns: array of messages
+    /// - Throws: Error if something goes wrong
     public func messages() throws -> [DMDirective] {
         return try children(DMDirective.Constants.room).all()
     }
-    
+    /// Query messages from this chat room between given Dates in TimeIntervals
+    ///
+    /// - Parameters:
+    ///   - from: TimeInterval from which messages should be query
+    ///   - to: TimeInterval to which messages should be query
+    /// - Returns: direct messages array for this chat room
+    /// - Throws: Error if something goes wrong
     public func messages(from: Double? = nil, to: Double? = nil) throws -> [DMDirective] {
         switch (from, to) {
         case let (from, to)  as (Double, Double):
@@ -101,11 +118,18 @@ extension DMRoom {
             return try children(DMDirective.Constants.room).all()
         }
     }
-    
+    /// Get chat room sibling with you Fluent model associated with VaporDM
+    ///
+    /// - Returns: Sibling between DMRoom and you Fluent's model
+    /// - Throws: Error if something goes wrong
     public func participant<T:DMUser>() throws -> Siblings<T> {
         return try siblings()
     }
-    
+    /// Get chat room participants
+    ///
+    /// - Parameter sender: If sender is specify, will exclude him from participants
+    /// - Returns: Chat room participants
+    /// - Throws: Error if something goes wrong
     public func participants<T:DMUser>(exclude sender: T? = nil) throws -> [T] {
         guard let id = sender?.id else {
             return try participant().all()
@@ -115,6 +139,11 @@ extension DMRoom {
 }
 
 extension DMRoom {
+    /// Find char toom by UUID
+    ///
+    /// - Parameter uniqueId: UUID of chat room
+    /// - Returns: Chat room object if exist with this UUID
+    /// - Throws: Error if something goes wrong
     public class func find(_ uniqueId: String) throws -> DMRoom? {
         guard let _ = database else { return nil }
         return try DMRoom.query().filter(Constants.uniqueId, .equals, uniqueId.lowercased()).first()
