@@ -8,20 +8,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
-      "line": 16,
-      "symbol": "DMController.group",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMController.swift",
-      "line": 26,
-      "symbol": "DMController.init(drop:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Controllers/DMFlowController.swift",
       "line": 16,
       "symbol": "DMFlowControllerError.missingSenderId",
