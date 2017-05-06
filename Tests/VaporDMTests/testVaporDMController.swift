@@ -256,11 +256,11 @@ class testVaporDMController: XCTestCase {
         let roomUniqueId = UUID().uuidString
         var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
         do {
-            var user1 = try User(id: 1)
+            var user1 = try User(id: 11)
             try user1.save()
-            var user2 = try User(id: 2)
+            var user2 = try User(id: 22)
             try user2.save()
-            var user3 = try User(id: 3)
+            var user3 = try User(id: 33)
             try user3.save()
             try room.save()
             _ = try Pivot<User, DMRoom>.getOrCreate(user1, room)
@@ -285,7 +285,7 @@ class testVaporDMController: XCTestCase {
             }
             XCTAssertTrue(response.status.statusCode == 200)
             let receivers: [User] = try room.participants()
-            XCTAssertTrue(receivers.count == 2, "Wrong number of room participants")
+            XCTAssertTrue(receivers.count == 2, "Wrong number of room participants:\(receivers.count)")
         } catch {
             XCTFail(error.localizedDescription)
         }

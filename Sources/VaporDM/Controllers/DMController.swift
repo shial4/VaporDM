@@ -43,7 +43,7 @@ public final class DMController<T:DMUser> {
         chat.socket("service", T.self, handler: chatService)
         chat.post("room", handler: createRoom)
         chat.post("room", String.self, handler: addUsersToRoom)
-        chat.post("room", String.self, "remove", handler: removeUsersToRoom)
+        chat.post("room", String.self, "remove", handler: removeUsersFromRoom)
         chat.get("room", String.self, handler: getRoom)
         chat.get("room", String.self, "participant", handler: getRoomParticipants)
         chat.get("participant", T.self, "rooms", handler: getParticipantRooms)
@@ -167,7 +167,7 @@ public final class DMController<T:DMUser> {
     ///   - uniqueId: Chat room UUID
     /// - Returns: Chat room
     /// - Throws: If room is not found or query do fail
-    public func removeUsersToRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+    public func removeUsersFromRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
         guard var room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
