@@ -14,12 +14,12 @@ import Fluent
 public final class DMController<T:DMUser> {
     /// Group under which endpoints are grouped
     open var group: String = "chat"
+    /// VaporDM configuraton object
+    var configuration: DMConfiguration
+    /// VaporDM connection set
+    var connections: Set<DMConnection> = []
     /// An Droplet instance under endpoint are handled
     fileprivate weak var drop: Droplet?
-    /// VaporDM configuraton object
-    fileprivate var configuration: DMConfiguration
-    /// VaporDM connection set
-    fileprivate var connections: Set<DMConnection> = []
     /// Function which expose Models instance for Vapor Fluent to exten your database.
     ///
     /// - Returns: Preparation reuired for VaporDM to work on database
@@ -43,6 +43,7 @@ public final class DMController<T:DMUser> {
         chat.socket("service", T.self, handler: chatService)
         chat.post("room", handler: createRoom)
         chat.post("room", String.self, handler: addUsersToRoom)
+        chat.post("room", String.self, "remove", handler: removeUsersToRoom)
         chat.get("room", String.self, handler: getRoom)
         chat.get("room", String.self, "participant", handler: getRoomParticipants)
         chat.get("participant", T.self, "rooms", handler: getParticipantRooms)
@@ -136,6 +137,45 @@ public final class DMController<T:DMUser> {
         try room.save()
         for user: T in try request.users() {
             _ = try Pivot<T, DMRoom>.getOrCreate(user, room)
+        }
+        return try room.makeJSON()
+    }
+    
+    /// Remove users from room.
+    ///
+    ///```
+    /// POST: /chat/room/${room_uuid}/remove
+    /// "Content-Type" = "application/json"
+    ///```
+    /// In Body Your Fluent Model or array of models which is associated with VaporDM.
+    ///```
+    /// {
+    ///     [
+    ///         ${<User: Model, DMParticipant>},
+    ///         ${<User: Model, DMParticipant>}
+    ///     ]
+    /// }
+    ///```
+    /// Or
+    ///```
+    /// {
+    ///     ${<User: Model, DMParticipant>}
+    /// }
+    ///```
+    /// - Parameters:
+    ///   - request: request object
+    ///   - uniqueId: Chat room UUID
+    /// - Returns: Chat room
+    /// - Throws: If room is not found or query do fail
+    public func removeUsersToRoom(request: Request, uniqueId: String) throws -> ResponseRepresentable {
+        guard var room = try DMRoom.find(uniqueId.lowercased()) else {
+            throw Abort.notFound
+        }
+        room.updated = Date()
+        try room.save()
+        for user: T in try request.users() {
+            let ref = try Pivot<T, DMRoom>.getOrCreate(user, room)
+            try ref.delete()
         }
         return try room.makeJSON()
     }
@@ -267,7 +307,7 @@ extension DMController {
                 }
                 return true
             }) {
-                try connection.socket.send(redirect)
+                try connection.socket?.send(redirect)
                 if let removed = offline.remove(connection.userId) {
                     online.append(removed)
                 }

@@ -440,6 +440,91 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:FC7VaporDM12DMController17removeUsersToRoomFzT7requestC4HTTP7Request8uniqueIdSS_PS1_21ResponseRepresentable_"></a>
+                    <a name="//apple_ref/swift/Method/removeUsersToRoom(request:uniqueId:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7VaporDM12DMController17removeUsersToRoomFzT7requestC4HTTP7Request8uniqueIdSS_PS1_21ResponseRepresentable_">removeUsersToRoom(request:uniqueId:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Remove users from room.</p>
+<pre class="highlight plaintext"><code> POST: /chat/room/${room_uuid}/remove
+ "Content-Type" = "application/json"
+</code></pre>
+
+<p>In Body Your Fluent Model or array of models which is associated with VaporDM.</p>
+<pre class="highlight json"><code><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="err">[</span><span class="w">
+         </span><span class="err">${&lt;User:</span><span class="w"> </span><span class="err">Model,</span><span class="w"> </span><span class="err">DMParticipant&gt;</span><span class="p">}</span><span class="err">,</span><span class="w">
+         </span><span class="err">$</span><span class="p">{</span><span class="err">&lt;User:</span><span class="w"> </span><span class="err">Model,</span><span class="w"> </span><span class="err">DMParticipant&gt;</span><span class="p">}</span><span class="w">
+     </span><span class="err">]</span><span class="w">
+ </span><span class="err">}</span><span class="w">
+</span></code></pre>
+
+<p>Or</p>
+<pre class="highlight json"><code><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="err">${&lt;User:</span><span class="w"> </span><span class="err">Model,</span><span class="w"> </span><span class="err">DMParticipant&gt;</span><span class="p">}</span><span class="w">
+ </span><span class="err">}</span><span class="w">
+</span></code></pre>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    If room is not found or query do fail
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">removeUsersToRoom</span><span class="p">(</span><span class="nv">request</span><span class="p">:</span> <span class="kt">Request</span><span class="p">,</span> <span class="nv">uniqueId</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">ResponseRepresentable</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>request</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>request object</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>uniqueId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Chat room UUID</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Chat room</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:FC7VaporDM12DMController19getRoomParticipantsFzT7requestC4HTTP7Request8uniqueIdSS_PS1_21ResponseRepresentable_"></a>
                     <a name="//apple_ref/swift/Method/getRoomParticipants(request:uniqueId:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:FC7VaporDM12DMController19getRoomParticipantsFzT7requestC4HTTP7Request8uniqueIdSS_PS1_21ResponseRepresentable_">getRoomParticipants(request:uniqueId:)</a>
