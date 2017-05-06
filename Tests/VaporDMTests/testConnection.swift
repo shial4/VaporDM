@@ -46,23 +46,33 @@ class testConnection: XCTestCase {
     }
     
     func testConnectionPingTimerTrigger() {
-        let exp = XCTestExpectation(description: "Timer trigger")
+        let exp = expectation(description: "Timer trigger")
         let c = DMConnection(id: "1", user: "1")
         c.ping(every: 4, callback: {
             exp.fulfill()
         })
         XCTAssertTrue(c.timer != nil, "timer is nil")
-        wait(for: [exp], timeout: 5)
+        waitForExpectations(timeout: 10, handler: nil)
     }
     
     func testConnectionPingTimerTriggerTwo() {
-        let exp = XCTestExpectation(description: "Timer trigger")
-        exp.expectedFulfillmentCount = 2
+        let exp = expectation(description: "Timer trigger")
+        let exp2 = expectation(description: "Timer second trigger")
         let c = DMConnection(id: "1", user: "1")
+        var count = 0
         c.ping(every: 4, callback: {
-            exp.fulfill()
+            switch count {
+            case 0:
+                exp.fulfill()
+            case 1:
+                
+                exp2.fulfill()
+            default:
+                break
+            }
+            count = count + 1
         })
         XCTAssertTrue(c.timer != nil, "timer is nil")
-        wait(for: [exp], timeout: 10)
+        waitForExpectations(timeout: 10, handler: nil)
     }
 }
