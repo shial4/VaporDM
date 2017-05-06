@@ -37,6 +37,18 @@ let drop = Droplet()
 let dm = VaporDM<User>(for: drop)
 ```
 
+### 3 Configure
+
+Beside default configuration you can add your own configuration object which correspond to protocol `DMConfiguration`
+```swift
+struct MyConfiguration: DMConfiguration {
+    var pingIterval: Int? { return 5 }
+}
+VaporDM<User>(for: drop, configuration: MyConfiguration())
+```
+Default value use `DMDefaultConfiguration` which specify ping time interval to 10 seconds. If you will return nil in your configuration object, server will skipp ping part to hold connection.
+
+
 VaporDM is an extension to an existing project. Based on your `User` DataBase model and Vapor's `Fluent` is extending your DataBase with two additional model for storing messages and chat rooms.
 Your `User` model needs to conform to `DMParticipant` protocol. This protocol require implementation of two methods
 - 1 `directMessageLog(_ log: DMLog)` 

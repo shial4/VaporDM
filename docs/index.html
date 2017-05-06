@@ -144,6 +144,16 @@
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">drop</span> <span class="o">=</span> <span class="kt">Droplet</span><span class="p">()</span>
 <span class="k">let</span> <span class="nv">dm</span> <span class="o">=</span> <span class="kt">VaporDM</span><span class="o">&lt;</span><span class="kt">User</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="n">drop</span><span class="p">)</span>
 </code></pre>
+<h3 id='3-configure' class='heading'>3 Configure</h3>
+
+<p>Beside default configuration you can add your own configuration object which correspond to protocol <code>DMConfiguration</code></p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">MyConfiguration</span><span class="p">:</span> <span class="kt">DMConfiguration</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">pingIterval</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">5</span> <span class="p">}</span>
+<span class="p">}</span>
+<span class="kt">VaporDM</span><span class="o">&lt;</span><span class="kt">User</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="n">drop</span><span class="p">,</span> <span class="nv">configuration</span><span class="p">:</span> <span class="kt">MyConfiguration</span><span class="p">())</span>
+</code></pre>
+
+<p>Default value use <code>DMDefaultConfiguration</code> which specify ping time interval to 10 seconds. If you will return nil in your configuration object, server will skipp ping part to hold connection.</p>
 
 <p>VaporDM is an extension to an existing project. Based on your <code>User</code> DataBase model and Vapor&rsquo;s <code>Fluent</code> is extending your DataBase with two additional model for storing messages and chat rooms.
 Your <code>User</code> model needs to conform to <code>DMParticipant</code> protocol. This protocol require implementation of two methods</p>
