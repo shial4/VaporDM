@@ -22,6 +22,7 @@ class testVaporDMController: XCTestCase {
         ("testGetRoomFailure", testGetRoomFailure),
         ("testAddUserToRoom", testAddUserToRoom),
         ("testAddUsersToRoom", testAddUsersToRoom),
+        ("testRemoveUsersFromRoom", testRemoveUsersFromRoom),
         ("testAddUsersToRoomWithVeryfication", testAddUsersToRoomWithVeryfication),
         ("testGetRoomParticipant", testGetRoomParticipant),
         ("testGetParticipantRooms", testGetParticipantRooms),
@@ -30,6 +31,7 @@ class testVaporDMController: XCTestCase {
         ("testConfiguration", testConfiguration),
         ("testConfigurationInterval", testConfigurationInterval),
         ("testErrorMessages", testErrorMessages),
+        ("testSendMessage", testSendMessage),
         ]
     
     var drop: Droplet! = nil
@@ -250,6 +252,45 @@ class testVaporDMController: XCTestCase {
         }
     }
     
+    func testRemoveUsersFromRoom() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        do {
+            var user1 = try User(id: 1)
+            try user1.save()
+            var user2 = try User(id: 2)
+            try user2.save()
+            var user3 = try User(id: 3)
+            try user3.save()
+            try room.save()
+            _ = try Pivot<User, DMRoom>.getOrCreate(user1, room)
+            _ = try Pivot<User, DMRoom>.getOrCreate(user2, room)
+            _ = try Pivot<User, DMRoom>.getOrCreate(user3, room)
+            let request = try! Request(method: .post, uri: "/chat/room/\(roomUniqueId)/remove")
+            request.headers["Content-Type"] = "application/json"
+            request.body = JSON([try user3.makeJSON()]).makeBody()
+            guard let response = try? drop.respond(to: request) else {
+                XCTFail()
+                return
+            }
+            guard let body = response.body.bytes else {
+                XCTFail()
+                return
+            }
+            let node = try! JSON(bytes: body)
+            let uniqueID = node["uniqueid"]
+            guard let id = uniqueID?.string, id == roomUniqueId.lowercased() else {
+                XCTFail()
+                return
+            }
+            XCTAssertTrue(response.status.statusCode == 200)
+            let receivers: [User] = try room.participants()
+            XCTAssertTrue(receivers.count == 2, "Wrong number of room participants")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testAddUsersToRoomWithVeryfication() {
         let roomUniqueId = UUID().uuidString
         var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
@@ -427,5 +468,27 @@ class testVaporDMController: XCTestCase {
         XCTAssertTrue(DMFlowControllerError.unableToReadBodyParameter.description == "unable to ready body parameter")
         XCTAssertTrue(DMFlowControllerError.missingSenderId.description == "missing sender's id")
         XCTAssertTrue(DMFlowControllerError.unableToGetOrCreatePivot.description == "unable to get or create pivot")
+    }
+    
+    func testSendMessage() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        try! room.save()
+        var user = try! User(id: 1)
+        try! user.save()
+        var user2 = try! User(id: 2)
+        try! user2.save()
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user, room)
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user2, room)
+        let controller = DMController<User>(drop: drop, configuration: DMDefaultConfiguration())
+        let connection = DMConnection(id: "aa", user: "1")
+        controller.applyConfiguration(for: connection)
+        controller.connections.insert(connection)
+        let flow = try! DMFlowController(sender: user, message: JSON([
+            "room":roomUniqueId.makeNode(),
+            "type":"M",
+            "body":"second"]))
+        controller.sendMessage(flow)
+        XCTAssertTrue(true)
     }
 }
