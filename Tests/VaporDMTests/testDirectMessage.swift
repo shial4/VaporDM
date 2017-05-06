@@ -23,6 +23,11 @@ class testDirectMessage: XCTestCase {
         ("testStatusParticipantsOnTwoRooms", testStatusParticipantsOnTwoRooms),
         ("testEventMessage", testEventMessage),
         ("testEventMessageNoRoom", testEventMessageNoRoom),
+        ("testTextParseMessageNoType", testTextParseMessageNoType),
+        ("testTextParseMessageWrongTypeType", testTextParseMessageWrongTypeType),
+        ("testParticipantDM", testParticipantDM),
+        ("testParticipantDMEvent", testParticipantDMEvent),
+        ("testParticipantDMLog", testParticipantDMLog),
     ]
     
     var drop: Droplet! = nil
@@ -319,5 +324,64 @@ class testDirectMessage: XCTestCase {
         } catch {
             XCTFail(error.localizedDescription)
         }
+    }
+    
+    func testTextParseMessageNoType() {
+        var user = try! User(id: 1)
+        try! user.save()
+        let testMessage = JSON([
+            "room":"1234",
+            "type":"ABC",
+            "body":"message"])
+        XCTAssertNotNil(testMessage)
+        do {
+            let message = try DMFlowController(sender: user, message: testMessage)
+            _ = try message.parseMessage()
+        } catch DMFlowControllerError.unknowMessageType {
+            XCTAssertTrue(true)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testTextParseMessageWrongTypeType() {
+        var user = try! User(id: 1)
+        try! user.save()
+        let testMessage = JSON([
+            "room":"1234",
+            "body":"message"])
+        XCTAssertNotNil(testMessage)
+        do {
+            let message = try DMFlowController(sender: user, message: testMessage)
+            _ = try message.parseMessage()
+        } catch DMFlowControllerError.unableToReadMessageTypeParameter {
+            XCTAssertTrue(true)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testParticipantDM() {
+        var user = try! User(id: 1)
+        try! user.save()
+        let testMessage = JSON([
+            "room":"1234",
+            "body":"message"])
+        let message = User.directMessage(user, message: testMessage, type: .messageText)
+        XCTAssertNotNil(message)
+    }
+    
+    func testParticipantDMEvent() {
+        var user = try! User(id: 1)
+        try! user.save()
+        User.directMessageEvent(DMEvent([] ,message: JSON([:])))
+        XCTAssertTrue(true)
+    }
+    
+    func testParticipantDMLog() {
+        var user = try! User(id: 1)
+        try! user.save()
+        User.directMessageLog(DMLog(message: "error", type: .error))
+        XCTAssertTrue(true)
     }
 }

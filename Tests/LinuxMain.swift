@@ -9,5 +9,6 @@ XCTMain([
      testCase(testVaporDMController.allTests),
      testCase(testLogs.allTests),
      testCase(testEvents.allTests),
+     testCase(testConnection.allTests),
 ])
 #endif

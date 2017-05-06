@@ -12,10 +12,17 @@ import Vapor
 import Fluent
 
 public final class DMController<T:DMUser> {
-    
+    /// Group under which endpoints are grouped
     open var group: String = "chat"
+    /// An Droplet instance under endpoint are handled
     fileprivate weak var drop: Droplet?
+    /// VaporDM configuraton object
+    fileprivate var configuration: DMConfiguration
+    /// VaporDM connection set
     fileprivate var connections: Set<DMConnection> = []
+    /// Function which expose Models instance for Vapor Fluent to exten your database.
+    ///
+    /// - Returns: Preparation reuired for VaporDM to work on database
     fileprivate func models() -> [Preparation.Type] {
         return [Pivot<T, DMRoom>.self,
                 DMRoom.self,
@@ -23,8 +30,14 @@ public final class DMController<T:DMUser> {
         ]
     }
     
-    public init(drop: Droplet) {
+    /// DMController object which do provide endpoint to work with VaporDM
+    ///
+    /// - Parameters:
+    ///   - droplet: Droplet object required to correctly set up VaporDM
+    ///   - configuration: DMConfiguration object required to configure VaporDM. Default value is DMDefaultConfiguration() object
+    public init(drop: Droplet, configuration: DMConfiguration) {
         self.drop = drop
+        self.configuration = configuration
         drop.preparations += models()
         let chat = drop.grouped(group)
         chat.socket("service", T.self, handler: chatService)
@@ -201,13 +214,17 @@ public final class DMController<T:DMUser> {
             return
         }
         let connectionIdentifier = UUID().uuidString
+        T.directMessage(log: DMLog(message: "User: \(user.id ?? "") did connect", type: .info))
+
         do {
             let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.connected.rawValue).makeNode()]))
             self.sendMessage(message)
         } catch {
             T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }
-        self.connections.insert(DMConnection(id: connectionIdentifier, user: id, socket: ws))
+        let connection = DMConnection(id: connectionIdentifier, user: id, socket: ws)
+        applyConfiguration(for: connection)
+        self.connections.insert(connection)
         
         ws.onText = { ws, text in
             do {
@@ -235,11 +252,10 @@ public final class DMController<T:DMUser> {
 }
 
 extension DMController {
-    
     /// Send message over the WebSocket thanks to DMFlowController `parseMessage` method result.
     ///
     /// - Parameter message: DMFlowController instance
-    fileprivate func sendMessage<T:DMUser>(_ message: DMFlowController<T>) {
+    func sendMessage<T:DMUser>(_ message: DMFlowController<T>) {
         do {
             let response: (redirect: JSON?, receivers: [T]) = try message.parseMessage()
             guard let redirect = response.redirect else { return }
@@ -262,10 +278,19 @@ extension DMController {
             T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }
     }
+    /// Apply DMConfiguration instance for current connection passed in argument.
+    ///
+    /// - Parameter connection: Configuration which specify among others ping time interval.
+    func applyConfiguration(for connection: DMConnection) {
+        guard let interval = configuration.pingIterval else {
+            T.directMessage(log: DMLog(message: "Skipping ping sequence. DMConfiguration do not specify ping interval.", type: .info))
+            return
+        }
+        connection.ping(every: interval)
+    }
 }
 
 extension Request {
-    
     /// Parse Requesto JSON to chat room object
     ///
     /// - Returns: chat room object
