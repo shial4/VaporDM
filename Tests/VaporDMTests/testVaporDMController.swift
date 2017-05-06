@@ -27,6 +27,9 @@ class testVaporDMController: XCTestCase {
         ("testGetParticipantRooms", testGetParticipantRooms),
         ("testGetNotFoundRoomHistory", testGetNotFoundRoomHistory),
         ("testGetRoomHistory", testGetRoomHistory),
+        ("testConfiguration", testConfiguration),
+        ("testConfigurationInterval", testConfigurationInterval),
+        ("testErrorMessages", testErrorMessages),
         ]
     
     var drop: Droplet! = nil
@@ -404,5 +407,25 @@ class testVaporDMController: XCTestCase {
             return
         }
         XCTAssertTrue(response.status.statusCode == 200)
+    }
+    
+    func testConfiguration() {
+        let config = DMDefaultConfiguration()
+        XCTAssertNotNil(config)
+    }
+    
+    func testConfigurationInterval() {
+        let config = DMDefaultConfiguration()
+        XCTAssertTrue(config.pingIterval == 10, "interval is wrong")
+    }
+    
+    func testErrorMessages() {
+        XCTAssertTrue(DMFlowControllerError.jsonWrongContent.description == "JSON have wrong context")
+        XCTAssertTrue(DMFlowControllerError.unableToReadRoomParameter.description == "unable to read room parameter")
+        XCTAssertTrue(DMFlowControllerError.unableToReadMessageTypeParameter.description == "unable to read message type")
+        XCTAssertTrue(DMFlowControllerError.unknowMessageType.description == "unknown message type")
+        XCTAssertTrue(DMFlowControllerError.unableToReadBodyParameter.description == "unable to ready body parameter")
+        XCTAssertTrue(DMFlowControllerError.missingSenderId.description == "missing sender's id")
+        XCTAssertTrue(DMFlowControllerError.unableToGetOrCreatePivot.description == "unable to get or create pivot")
     }
 }
