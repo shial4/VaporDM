@@ -23,6 +23,7 @@ class testExtensions: XCTestCase {
         ("testPivotGetOrCreateNilId3", testPivotGetOrCreateNilId3),
         ("testPivotGetOrCreateNilId4", testPivotGetOrCreateNilId4),
         ("testRemoveUserFromArray", testRemoveUserFromArray),
+        ("testRemovePivot", testRemovePivot),
         ]
     
     var drop: Droplet! = nil
@@ -44,21 +45,13 @@ class testExtensions: XCTestCase {
     
     //MARK: Pivot Extension
     func testPivotLeftKey() {
-        let leftKey = Pivot<User, DMRoom>.leftKey
-        if User.entity < DMRoom.entity {
-            XCTAssert(leftKey == "\(User.name)_\(User.idKey)", "\(leftKey)")
-        } else {
-            XCTAssert(leftKey == "\(DMRoom.name)_\(DMRoom.idKey)", "\(leftKey)")
-        }
+        let user = try! User(id: 11)
+        XCTAssert(user.pivotKey == "\(User.name)_\(User.idKey)", user.pivotKey)
     }
     
     func testPivotRightKey() {
-        let rightKey = Pivot<User, DMRoom>.rightKey
-        if User.entity < DMRoom.entity {
-            XCTAssert(rightKey == "\(DMRoom.name)_\(DMRoom.idKey)", "\(rightKey)")
-        } else {
-            XCTAssert(rightKey == "\(User.name)_\(User.idKey)", "\(rightKey)")
-        }
+        let room = DMRoom(uniqueId: "uniq", name: "")
+        XCTAssert(room.pivotKey == "\(DMRoom.name)_\(DMRoom.idKey)", room.pivotKey)
     }
     
     func testPivotGetOrCreate() {
@@ -155,6 +148,32 @@ class testExtensions: XCTestCase {
                 XCTAssert(removed.id == 2, "Wrong user removed")
             }
             XCTAssert(array.count == 2, "wrong array count")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testRemovePivot() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        do {
+            var user1 = try User(id: 1)
+            try user1.save()
+            var user2 = try User(id: 2)
+            try user2.save()
+            var user3 = try User(id: 3)
+            try user3.save()
+            var user4 = try User(id: 4)
+            try user4.save()
+            try room.save()
+            _ = try Pivot<User, DMRoom>.getOrCreate(user1, room)
+            _ = try Pivot<User, DMRoom>.getOrCreate(user2, room)
+            _ = try Pivot<User, DMRoom>.getOrCreate(user3, room)
+            _ = try Pivot<User, DMRoom>.getOrCreate(user4, room)
+            try Pivot<User, DMRoom>.remove(user1, room)
+            let participants: [User] = try room.participants()
+            print(participants.map({$0.id ?? "-"}))
+            XCTAssert(participants.count == 3, "wrong array count")
         } catch {
             XCTFail(error.localizedDescription)
         }

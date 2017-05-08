@@ -85,20 +85,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
-      "line": 60,
-      "symbol": "DMParticipant.directMessage(event:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMParticipant.swift",
-      "line": 66,
-      "symbol": "DMParticipant.directMessage(log:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/shial/Development/www/VaporDM/Sources/VaporDM/Models/DMRoom.swift",
       "line": null,
       "symbol": "DMRoom",

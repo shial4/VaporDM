@@ -341,6 +341,7 @@ class testVaporDMController: XCTestCase {
             }
             XCTAssertTrue(response.status.statusCode == 200)
             let receivers: [User] = try room.participants()
+            print(receivers.map({$0.id ?? "-"}))
             XCTAssertTrue(receivers.count == 2, "Wrong number of room participants:\(receivers.count)")
             XCTAssertTrue(receivers.contains(where: { user -> Bool in user.id == user2.id }), "Rooms missing participant id:2")
             XCTAssertTrue(receivers.contains(where: { user -> Bool in user.id == user1.id }), "Rooms missing participant id:1")
@@ -382,6 +383,7 @@ class testVaporDMController: XCTestCase {
             }
             XCTAssertTrue(response.status.statusCode == 200)
             let receivers: [User] = try room.participants()
+            print(receivers.map({$0.id ?? "-"}))
             XCTAssertTrue(receivers.count == 2, "Wrong number of room participants:\(receivers.count)")
             XCTAssertTrue(receivers.contains(where: { user -> Bool in user.id == user2.id }), "Rooms missing participant id:2")
             XCTAssertTrue(receivers.contains(where: { user -> Bool in user.id == user1.id }), "Rooms missing participant id:1")

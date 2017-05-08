@@ -9,16 +9,6 @@
 import Fluent
 
 extension Pivot where First: DMParticipant, First: DMUser, Second: DMRoom {
-    /// return key string for left Entity object under this Pivot
-    static var leftKey: String {
-        return "\(left.name)_\(left.idKey)"
-    }
-    
-    /// return key string for right Entity object under this Pivot
-    static var rightKey: String {
-        return "\(right.name)_\(right.idKey)"
-    }
-    
     /// Create Pivot between two entities if needed. Otherwise return existing one
     ///
     /// - Parameters:
@@ -31,7 +21,7 @@ extension Pivot where First: DMParticipant, First: DMUser, Second: DMRoom {
         guard let firstId = first.id, let secondId = second.id else {
             throw RelationError.noIdentifier
         }
-        let x = try query().filter(leftKey, firstId).filter(rightKey, secondId).all()
+        let x = try query().filter(first.pivotKey, firstId).filter(second.pivotKey, secondId).all()
         if x.isEmpty {
             pivot = self.init(first, second)
         } else {
@@ -54,6 +44,7 @@ extension Pivot where First: DMParticipant, First: DMUser, Second: DMRoom {
         guard let firstId = first.id, let secondId = second.id else {
             throw RelationError.noIdentifier
         }
-        try query().filter(leftKey, firstId).filter(rightKey, secondId).delete()
+        let q = try query().filter(first.pivotKey, firstId).filter(second.pivotKey, secondId)
+        try q.delete()
     }
 }
