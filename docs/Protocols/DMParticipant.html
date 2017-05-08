@@ -14,7 +14,7 @@
     <a title="DMParticipant Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html"> Docs</a> (83% documented)</p>
+        <p><a href="../index.html"> Docs</a> (84% documented)</p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -133,9 +133,6 @@
                     <a name="//apple_ref/swift/Method/directMessage(_:message:type:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:ZFP7VaporDM13DMParticipant13directMessageFTx7messageV4JSON4JSON4typeOS_6DMType_GSqS2__">directMessage(_:message:type:)</a>
                     </code>
-                      <span class="declaration-note">
-                        Default implementation
-                      </span>
                   </div>
                   <div class="height-container">
                     <div class="pointer-container"></div>
@@ -147,11 +144,6 @@
    return message
 }
 </code></pre>
-
-                      </div>
-                      <h4>Default Implementation</h4>
-                      <div class="default_impl abstract">
-                        <p>Log protocol message. Called everytime time is trigger inside VaporDM. Thans to this method you are able to handle log and have a wider look on the stuff happening inside.</p>
 
                       </div>
                       <div class="declaration">
@@ -207,7 +199,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#return value description#&gt;</p>
+                        <p>message JSON</p>
                       </div>
                     </section>
                   </div>
@@ -305,16 +297,35 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>DMEvent protocol method, to dispatch operation on bacground queue</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">DMParticipant</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">directMessage</span><span class="p">(</span><span class="nv">event</span><span class="p">:</span> <span class="kt"><a href="../Structs/DMEvent.html">DMEvent</a></span><span class="o">&lt;</span><span class="k">Self</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>event</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>event to be delivered</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -335,16 +346,35 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>DMLog protocol method, to dispatch operation on bacground queue</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">DMParticipant</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">static</span> <span class="kd">func</span> <span class="nf">directMessage</span><span class="p">(</span><span class="nv">log</span><span class="p">:</span> <span class="kt"><a href="../Structs/DMLog.html">DMLog</a></span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>log</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>log to be delivered</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -436,7 +466,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-05-06)</p>
+          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-05-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

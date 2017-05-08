@@ -141,7 +141,7 @@ struct DMFlowController<T: DMUser> {
     ///   - type: message type, connected or disconnected
     /// - Returns: Group of receivers to which message should be send, parsed JSON with nested sender ID.
     /// - Throws: If anything bad occurred during this method, error message will be thrown
-    fileprivate func deliverConnectionState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
+    func deliverConnectionState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         let redirect = try composeMessage(from: json)
         if let verify = T.directMessage(sender, message: redirect, type: type) {
             let receivers: [T] = try handleStatusMessage()
@@ -157,7 +157,7 @@ struct DMFlowController<T: DMUser> {
     ///   - type: message type
     /// - Returns: Group of receivers to which message should be send, parsed JSON with nested sender ID.
     /// - Throws: If anything bad occurred during this method, error message will be thrown
-    fileprivate func deliverMessage(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
+    func deliverMessage(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         guard let body = json.object?[DMKeys.body]?.string else {
             throw DMFlowControllerError.unableToReadBodyParameter
         }
@@ -180,7 +180,7 @@ struct DMFlowController<T: DMUser> {
     ///   - type: message type
     /// - Returns: Group of receivers to which message should be send, parsed JSON with nested sender ID.
     /// - Throws: If anything bad occurred during this method, error message will be thrown
-    fileprivate func deliverMessageState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
+    func deliverMessageState(json: JSON, type: DMType)  throws -> (redirect: JSON?, receivers: [T]) {
         guard let room = self.room else {
             throw DMFlowControllerError.unableToReadRoomParameter
         }
@@ -196,7 +196,7 @@ struct DMFlowController<T: DMUser> {
     ///
     /// - Returns: Group of receivers to which message should be send
     /// - Throws: If anything bad occurred during this method, error message will be thrown
-    fileprivate func handleStatusMessage() throws -> [T] {
+    func handleStatusMessage() throws -> [T] {
         let allRooms = try sender.rooms().all()
         var receivers: [T] = []
         allRooms.forEach() {
@@ -216,7 +216,7 @@ struct DMFlowController<T: DMUser> {
     ///   - body: Text message body
     ///   - room: Chat room under message was sent
     /// - Throws: If anything bad occurred during this method, error message will be thrown
-    fileprivate func handleTextMessage(_ body: String, room: DMRoom) throws {
+    func handleTextMessage(_ body: String, room: DMRoom) throws {
         var directive = try DMDirective(message: body)
         directive.room = room.id
         directive.owner = self.sender.id
@@ -228,7 +228,7 @@ struct DMFlowController<T: DMUser> {
     /// - Parameter json: message JSON object
     /// - Returns: message JSON object with nested sender
     /// - Throws: If anything bad occurred during this method, error message will be thrown
-    fileprivate func composeMessage(from json: JSON) throws -> JSON {
+    func composeMessage(from json: JSON) throws -> JSON {
         guard let id = sender.id else {
             throw DMFlowControllerError.missingSenderId
         }
