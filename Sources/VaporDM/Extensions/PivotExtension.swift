@@ -54,6 +54,6 @@ extension Pivot where First: DMParticipant, First: DMUser, Second: DMRoom {
         guard let firstId = first.id, let secondId = second.id else {
             throw RelationError.noIdentifier
         }
-        try query().filter(leftKey, firstId).filter(rightKey, secondId).all().forEach({try $0.delete()})
+        try query().filter(leftKey, firstId).filter(rightKey, secondId).delete()
     }
 }

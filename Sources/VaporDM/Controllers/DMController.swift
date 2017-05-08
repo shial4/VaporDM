@@ -172,10 +172,10 @@ public final class DMController<T:DMUser> {
             throw Abort.notFound
         }
         room.updated = Date()
+        try room.save()
         for user: T in try request.users() {
             try Pivot<T, DMRoom>.remove(user, room)
         }
-        try room.save()
         return try room.makeJSON()
     }
     
