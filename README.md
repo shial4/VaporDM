@@ -1,13 +1,32 @@
 # VaporDM
 
-[![Language](https://img.shields.io/badge/Swift-3.1-brightgreen.svg)](http://swift.org)
-![Vapor](https://img.shields.io/badge/Vapor-1.0-green.svg)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/shial4/VaporDM/master/license)
-[![Build Status](https://travis-ci.org/shial4/VaporDM.svg?branch=master)](https://travis-ci.org/shial4/VaporDM)
-[![CircleCI](https://circleci.com/gh/shial4/VaporDM.svg?style=svg)](https://circleci.com/gh/shial4/VaporDM)
-[![codecov](https://codecov.io/gh/shial4/VaporDM/branch/master/graph/badge.svg)](https://codecov.io/gh/shial4/VaporDM)
-
-VaporDM is a simple, yet elegant, Swift library that allows you to integrate chat system into your Vapor project.
+<p align="center">
+    <img src="docs/logo.png" width="300" max-width="50%" alt="VaporDM" />
+</p>
+<p align="center">
+    <a href="http://swift.org">
+        <img src="https://img.shields.io/badge/Swift-3.1-brightgreen.svg" alt="Language" />
+    </a>
+    <a href="https://github.com/vapor/vapor">
+        <img src="https://img.shields.io/badge/Vapor-1.0-green.svg" alt="Vapor" />
+    </a>
+    <a href="https://raw.githubusercontent.com/shial4/VaporDM/master/license">
+        <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" />
+    </a>
+    <a href="https://travis-ci.org/shial4/VaporDM">
+        <img src="https://travis-ci.org/shial4/VaporDM.svg?branch=master" alt="TravisCI" />
+    </a>
+    <a href="https://circleci.com/gh/shial4/VaporDM">
+        <img src="https://circleci.com/gh/shial4/VaporDM.svg?style=svg" alt="CircleCI" />
+    </a>
+    <a href="https://codecov.io/gh/shial4/VaporDM">
+        <img src="https://codecov.io/gh/shial4/VaporDM/branch/master/graph/badge.svg" alt="codecov" />
+    </a>
+    <a href="https://codebeat.co/projects/github-com-shial4-vapordm-master">
+        <img src="https://codebeat.co/badges/b123d7a2-048e-435d-8e59-25b9c0a61aca" alt="codebeat" />
+    </a>
+</p>
+VaporDM is a simple extension for [Vapor](https://github.com/vapor/vapor) works with [Fluent](https://github.com/vapor/fluent). Allows you to integrate chat system into your project. VaporDM doesn't require you to create new database tables or Fluent models. He does it for you. Make your `User` model conform to [DMParticipant](https://shial4.github.io/VaporDM/Protocols/DMParticipant.html) or completely change the way you write model code. It can be used on any model with ease and init VaporDM with it. Model which conform to protocol will represent senders and receiver object type. 
 
 ## 🔧 Installation
 

@@ -40,25 +40,44 @@ public final class DMRoom {
         self.uniqueId = uniqueId
         self.name = name
     }
-    
-    public init(node: Node, in context: Context) throws {
+    /// Initialize object for DataBase context
+    ///
+    /// - Parameter node: node with data
+    /// - Throws: Error if something goes wrong
+    init(forDatabase node: Node) throws {
+        id = try node.extract(Constants.id)
+        created = try node.extract(Constants.created,
+                                   transform: Date.init(timeIntervalSince1970:))
+        updated = try node.extract(Constants.updated,
+                                   transform: Date.init(timeIntervalSince1970:))
+        name = try node.extract(Constants.name)
+        uniqueId = try node.extract(Constants.uniqueId)
+    }
+    /// Initialize object for all other contexts
+    ///
+    /// - Parameter node: node with data
+    /// - Throws: Error if something goes wrong
+    init(forDefault node: Node) throws {
+        do { id = try node.extract(Constants.id) } catch {}
+        do { created = try node.extract(Constants.created,
+                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
+        do { updated = try node.extract(Constants.updated,
+                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
+        name = try node.extract(Constants.name)
+        uniqueId = try node.extract(Constants.uniqueId)
+    }
+    /// Convenience initialize object for context
+    ///
+    /// - Parameters:
+    ///   - node: node with data
+    ///   - context: context information for init
+    /// - Throws: Error if something goes wrong
+    convenience public init(node: Node, in context: Context) throws {
         switch context {
         case is DatabaseContext:
-            id = try node.extract(Constants.id)
-            created = try node.extract(Constants.created,
-                                            transform: Date.init(timeIntervalSince1970:))
-            updated = try node.extract(Constants.updated,
-                                            transform: Date.init(timeIntervalSince1970:))
-            name = try node.extract(Constants.name)
-            uniqueId = try node.extract(Constants.uniqueId)
+            try self.init(forDatabase: node)
         default:
-            do { id = try node.extract(Constants.id) } catch {}
-            do { created = try node.extract(Constants.created,
-                                            transform: Date.init(timeIntervalSince1970:)) } catch {}
-            do { updated = try node.extract(Constants.updated,
-                                            transform: Date.init(timeIntervalSince1970:)) } catch {}
-            name = try node.extract(Constants.name)
-            uniqueId = try node.extract(Constants.uniqueId)
+            try self.init(forDefault: node)
         }
     }
 }

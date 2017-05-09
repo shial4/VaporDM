@@ -243,6 +243,32 @@ public final class DMController<T:DMUser> {
     ///   - ws: WebSocket
     ///   - user: User which did connect
     public func chatService<T:DMUser>(request: Request, ws: WebSocket, user: T) {
+        let connectionIdentifier = UUID().uuidString
+        openConnection(from: user, ws: ws, identifier: connectionIdentifier)
+        
+        ws.onText = {[weak self] ws, text in
+            self?.sendMessage(from: user, message:try? JSON(bytes: Array(text.utf8)))
+        }
+        
+        ws.onClose = {[weak self] ws, _, _, _ in
+            guard let id = user.id?.string else {
+                T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
+                return
+            }
+            self?.connections.remove(DMConnection(id: connectionIdentifier, user: id, socket: ws))
+            self?.sendMessage(from: user, message:JSON([DMKeys.type:String(DMType.disconnected.rawValue).makeNode()]))
+        }
+    }
+}
+
+extension DMController {
+    /// After user connect to WebSocket we are opening connection on VaporDM which means creating an connection object to identify user with this connection and being unique with different connection for the same user.
+    ///
+    /// - Parameters:
+    ///   - user: User which did connect
+    ///   - ws: WebSocket object
+    ///   - identifier: UUID to identify this connection
+    func openConnection<T:DMUser>(from user: T, ws: WebSocket, identifier: String) {
         guard let id = user.id?.string else {
             T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
             do {
@@ -252,45 +278,29 @@ public final class DMController<T:DMUser> {
             }
             return
         }
-        let connectionIdentifier = UUID().uuidString
         T.directMessage(log: DMLog(message: "User: \(user.id ?? "") did connect", type: .info))
-
+        sendMessage(from: user, message:JSON([DMKeys.type:String(DMType.connected.rawValue).makeNode()]))
+        let connection = DMConnection(id: identifier, user: id, socket: ws)
+        applyConfiguration(for: connection)
+        self.connections.insert(connection)
+    }
+    /// Take message JSON object from sender and parse message with DMFlowCOntroller. After success sends message.
+    ///
+    /// - Parameters:
+    ///   - user: Sender of this message
+    ///   - message: JSON containing message data
+    func sendMessage<T:DMUser>(from user: T, message: JSON?) {
+        guard let json = message else {
+            T.directMessage(log: DMLog(message: "JSON message is nil", type: .error))
+            return
+        }
         do {
-            let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.connected.rawValue).makeNode()]))
-            self.sendMessage(message)
+            let flow = try DMFlowController(sender: user, message: json)
+            self.sendMessage(flow)
         } catch {
             T.directMessage(log: DMLog(message: "\(error)", type: .error))
         }
-        let connection = DMConnection(id: connectionIdentifier, user: id, socket: ws)
-        applyConfiguration(for: connection)
-        self.connections.insert(connection)
-        
-        ws.onText = { ws, text in
-            do {
-                let message = try DMFlowController(sender: user, message: try JSON(bytes: Array(text.utf8)))
-                self.sendMessage(message)
-            } catch {
-                T.directMessage(log: DMLog(message: "\(error)", type: .error))
-            }
-        }
-        
-        ws.onClose = { ws, _, _, _ in
-            guard let id = user.id?.string else {
-                T.directMessage(log: DMLog(message: "Unable to get user unigeId", type: .error))
-                return
-            }
-            self.connections.remove(DMConnection(id: connectionIdentifier, user: id, socket: ws))
-            do {
-                let message = try DMFlowController(sender: user, message: JSON([DMKeys.type:String(DMType.disconnected.rawValue).makeNode()]))
-                self.sendMessage(message)
-            } catch {
-                T.directMessage(log: DMLog(message: "\(error)", type: .error))
-            }
-        }
     }
-}
-
-extension DMController {
     /// Send message over the WebSocket thanks to DMFlowController `parseMessage` method result.
     ///
     /// - Parameter message: DMFlowController instance
