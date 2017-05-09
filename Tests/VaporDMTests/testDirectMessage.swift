@@ -384,4 +384,38 @@ class testDirectMessage: XCTestCase {
         User.directMessageLog(DMLog(message: "error", type: .error))
         XCTAssertTrue(true)
     }
+    
+    func testDMRoomDatabase() {
+        let room = try! DMRoom(forDatabase: try! ["id":"1",
+                                             "uniqueid":"ABC",
+                                             "created":123456789,
+                                             "updated":123456789,
+                                             "name":"Chat Room"].makeNode())
+        XCTAssertNotNil(room)
+    }
+    
+    func testDMRoomDefault() {
+        let room = try! DMRoom(forDefault: try! ["id":"1",
+                                            "uniqueid":"ABC",
+                                            "created":123456789,
+                                            "updated":123456789,
+                                            "name":"Chat Room"].makeNode())
+        XCTAssertNotNil(room)
+    }
+    
+    func testDMRoomContext() {
+        let room = try! DMRoom(node: try! ["id":"1",
+                                           "uniqueid":"ABC",
+                                           "created":123456789,
+                                           "updated":123456789,
+                                           "name":"Chat Room"].makeNode(), in: DatabaseContext(drop.database!))
+        XCTAssertNotNil(room)
+        
+        let room2 = try! DMRoom(node: try! ["id":"1",
+                                           "uniqueid":"ABC",
+                                           "created":123456789,
+                                           "updated":123456789,
+                                           "name":"Chat Room"].makeNode(), in: JSONContext())
+        XCTAssertNotNil(room2)
+    }
 }
