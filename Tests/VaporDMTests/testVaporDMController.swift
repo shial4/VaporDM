@@ -37,6 +37,9 @@ class testVaporDMController: XCTestCase {
         ("testConfigurationInterval", testConfigurationInterval),
         ("testErrorMessages", testErrorMessages),
         ("testSendMessage", testSendMessage),
+        ("testSendMessageFromUser", testSendMessageFromUser),
+        ("testSendMessageFromUserNoMessage", testSendMessageFromUserNoMessage),
+        ("testSendMessageFromUserWrongMessage", testSendMessageFromUserWrongMessage),
         ("testSendMessageNoPing", testSendMessageNoPing),
         ("testDeliverMessageNoBody", testDeliverMessageNoBody),
         ("testDeliverMessageNoRoom", testDeliverMessageNoRoom),
@@ -613,6 +616,69 @@ class testVaporDMController: XCTestCase {
             "sender":"1",
             "body":"second"]))
         controller.sendMessage(flow)
+        XCTAssertTrue(true)
+    }
+    
+    func testSendMessageFromUser() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        try! room.save()
+        var user = try! User(id: 1)
+        try! user.save()
+        var user2 = try! User(id: 2)
+        try! user2.save()
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user, room)
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user2, room)
+        let controller = DMController<User>(drop: drop, configuration: DMDefaultConfiguration())
+        let connection = DMConnection(id: "aa", user: "1")
+        controller.applyConfiguration(for: connection)
+        controller.connections.insert(connection)
+        let message = JSON([
+        "room":roomUniqueId.makeNode(),
+        "type":"M",
+        "sender":"1",
+        "body":"second"])
+        controller.sendMessage(from: user, message: message)
+        XCTAssertTrue(true)
+    }
+    
+    func testSendMessageFromUserNoMessage() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        try! room.save()
+        var user = try! User(id: 1)
+        try! user.save()
+        var user2 = try! User(id: 2)
+        try! user2.save()
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user, room)
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user2, room)
+        let controller = DMController<User>(drop: drop, configuration: DMDefaultConfiguration())
+        let connection = DMConnection(id: "aa", user: "1")
+        controller.applyConfiguration(for: connection)
+        controller.connections.insert(connection)
+        controller.sendMessage(from: user, message: nil)
+        XCTAssertTrue(true)
+    }
+    
+    func testSendMessageFromUserWrongMessage() {
+        let roomUniqueId = UUID().uuidString
+        var room = DMRoom(uniqueId: roomUniqueId, name: "Maciek")
+        try! room.save()
+        var user = try! User(id: 1)
+        try! user.save()
+        var user2 = try! User(id: 2)
+        try! user2.save()
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user, room)
+        _ = try! Pivot<User, DMRoom>.getOrCreate(user2, room)
+        let controller = DMController<User>(drop: drop, configuration: DMDefaultConfiguration())
+        let connection = DMConnection(id: "aa", user: "1")
+        controller.applyConfiguration(for: connection)
+        controller.connections.insert(connection)
+        let message = JSON([
+            "room":roomUniqueId.makeNode(),
+            "sender":"1",
+            "body":"second"])
+        controller.sendMessage(from: user, message: message)
         XCTAssertTrue(true)
     }
     
