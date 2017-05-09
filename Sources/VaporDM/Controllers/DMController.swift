@@ -133,7 +133,7 @@ public final class DMController<T:DMUser> {
         guard var room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
-        room.updated = Date()
+        room.time.updated = Date()
         try room.save()
         for user: T in try request.users() {
             _ = try Pivot<T, DMRoom>.getOrCreate(user, room)
@@ -171,7 +171,7 @@ public final class DMController<T:DMUser> {
         guard var room = try DMRoom.find(uniqueId.lowercased()) else {
             throw Abort.notFound
         }
-        room.updated = Date()
+        room.time.updated = Date()
         try room.save()
         for user: T in try request.users() {
             try Pivot<T, DMRoom>.remove(user, room)

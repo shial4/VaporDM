@@ -12,7 +12,6 @@ import Fluent
 
 /// Fluent Model representing message sent from user to chat room.
 public final class DMDirective {
-    public static var entity = "dmdirective"
     public var exists = false
     
     /// Models unique id
@@ -34,10 +33,8 @@ public final class DMDirective {
     
     /// Text message which was sent
     public var message: String
-    /// Time when this message was created
-    public var created: Date = Date()
-    /// Time when this message was updated
-    public var updated: Date = Date()
+    /// Time identification
+    public var time: DMTimeIdentification = DMTimeIdentification()
     
     /// Create Direct Message object
     ///
@@ -50,12 +47,12 @@ public final class DMDirective {
     }
     
     public init(node: Node, in context: Context) throws {
-        id = try node.extract(Constants.id)
+        id = try? node.extract(Constants.id)
         room = try node.extract(Constants.room)
         owner = try node.extract(Constants.owner)
-        created = try node.extract(Constants.created,
+        time.created = try node.extract(Constants.created,
                                         transform: Date.init(timeIntervalSince1970:))
-        updated = try node.extract(Constants.updated,
+        time.updated = try node.extract(Constants.updated,
                                         transform: Date.init(timeIntervalSince1970:))
         message = try node.extract(Constants.message)
     }
@@ -68,8 +65,8 @@ extension DMDirective: Model {
         node[Constants.room] = room
         node[Constants.owner] = owner
         node[Constants.message] = message.makeNode()
-        node[Constants.created] = created.timeIntervalSince1970.makeNode()
-        node[Constants.updated] = updated.timeIntervalSince1970.makeNode()
+        node[Constants.created] = time.created.timeIntervalSince1970.makeNode()
+        node[Constants.updated] = time.updated.timeIntervalSince1970.makeNode()
         return try node.makeNode()
     }
 }

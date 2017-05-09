@@ -28,6 +28,10 @@ class testDirectMessage: XCTestCase {
         ("testParticipantDM", testParticipantDM),
         ("testParticipantDMEvent", testParticipantDMEvent),
         ("testParticipantDMLog", testParticipantDMLog),
+        ("testDMRoomDatabase", testDMRoomDatabase),
+        ("testDMRoomDefault", testDMRoomDefault),
+        ("testDMRoomContext", testDMRoomContext),
+        ("testTimeIdentification", testTimeIdentification),
     ]
     
     var drop: Droplet! = nil
@@ -417,5 +421,9 @@ class testDirectMessage: XCTestCase {
                                            "updated":123456789,
                                            "name":"Chat Room"].makeNode(), in: JSONContext())
         XCTAssertNotNil(room2)
+    }
+    
+    func testTimeIdentification() {
+        XCTAssertNotNil(DMTimeIdentification())
     }
 }

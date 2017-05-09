@@ -34,10 +34,6 @@ Add the following dependency to your `Package.swift` file:
 ```swift
 .Package(url:"https://github.com/shial4/VaporDM.git", majorVersion: 0, minor: 1)
 ```
-or you can use pre-release
-```swift
-.Package(url: "https://github.com/shial4/VaporDM.git", Version(0, 1, 0, prereleaseIdentifiers: ["beta", "1"]))
-```
 
 ## 💊 Usage
 

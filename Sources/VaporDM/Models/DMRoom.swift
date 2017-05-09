@@ -11,7 +11,6 @@ import Vapor
 import Fluent
 
 public final class DMRoom {
-    public static var entity = "dmroom"
     public var exists = false
     /// Chat room id
     public var id: Node?
@@ -27,10 +26,8 @@ public final class DMRoom {
     public var name: String
     /// Char room UUID
     public var uniqueId: String
-    /// Chat room created date
-    public var created: Date = Date()
-    /// Chat room updated date
-    public var updated: Date = Date()
+    /// Time identification
+    public var time: DMTimeIdentification = DMTimeIdentification()
     /// Initialize object with UUID and name
     ///
     /// - Parameters:
@@ -46,9 +43,9 @@ public final class DMRoom {
     /// - Throws: Error if something goes wrong
     init(forDatabase node: Node) throws {
         id = try node.extract(Constants.id)
-        created = try node.extract(Constants.created,
+        time.created = try node.extract(Constants.created,
                                    transform: Date.init(timeIntervalSince1970:))
-        updated = try node.extract(Constants.updated,
+        time.updated = try node.extract(Constants.updated,
                                    transform: Date.init(timeIntervalSince1970:))
         name = try node.extract(Constants.name)
         uniqueId = try node.extract(Constants.uniqueId)
@@ -58,11 +55,7 @@ public final class DMRoom {
     /// - Parameter node: node with data
     /// - Throws: Error if something goes wrong
     init(forDefault node: Node) throws {
-        do { id = try node.extract(Constants.id) } catch {}
-        do { created = try node.extract(Constants.created,
-                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
-        do { updated = try node.extract(Constants.updated,
-                                        transform: Date.init(timeIntervalSince1970:)) } catch {}
+        id = try? node.extract(Constants.id)
         name = try node.extract(Constants.name)
         uniqueId = try node.extract(Constants.uniqueId)
     }
@@ -88,8 +81,8 @@ extension DMRoom: Model {
         node[Constants.id] = id
         node[Constants.name] = name.makeNode()
         node[Constants.uniqueId] = uniqueId.lowercased().makeNode()
-        node[Constants.created] = created.timeIntervalSince1970.makeNode()
-        node[Constants.updated] = updated.timeIntervalSince1970.makeNode()
+        node[Constants.created] = time.created.timeIntervalSince1970.makeNode()
+        node[Constants.updated] = time.updated.timeIntervalSince1970.makeNode()
         return try node.makeNode()
     }
 }
