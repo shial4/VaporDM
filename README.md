@@ -17,7 +17,7 @@
         <img src="https://travis-ci.org/shial4/VaporDM.svg?branch=master" alt="TravisCI" />
     </a>
     <a href="https://circleci.com/gh/shial4/VaporDM">
-        <img src="https://circleci.com/gh/shial4/VaporDM.svg?style=svg" alt="CircleCI" />
+        <img src="https://circleci.com/gh/shial4/VaporDM.svg?style=shield" alt="CircleCI" />
     </a>
     <a href="https://codecov.io/gh/shial4/VaporDM">
         <img src="https://codecov.io/gh/shial4/VaporDM/branch/master/graph/badge.svg" alt="codecov" />
